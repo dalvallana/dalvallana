@@ -4,6 +4,8 @@ import type { ReactNode } from 'react'
 
 import { siteName } from '@/lib/site'
 
+import appCss from '@/styles/app.css?url'
+
 type RouterContext = { queryClient: QueryClient }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -13,6 +15,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 			{ name: 'viewport', content: 'width=device-width, initial-scale=1' },
 			{ title: siteName },
 		],
+		links: [{ rel: 'stylesheet', href: appCss }],
 	}),
 	shellComponent: RootDocument,
 })

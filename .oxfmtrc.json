@@ -5,5 +5,6 @@
 	"singleQuote": true,
 	"semi": false,
 	"sortImports": true,
+	"sortTailwindcss": { "stylesheet": "./src/styles/app.css", "functions": ["cn", "cva"] },
 	"ignorePatterns": ["**/*.gen.ts", ".content-collections/**", "bun.lock"]
 }
