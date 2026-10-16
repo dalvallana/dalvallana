@@ -9,7 +9,7 @@ import { postQueryOptions } from '@/queries/posts'
 
 export const Route = createFileRoute('/{-$locale}/posts/$slug')({
 	loader: async ({ context: { queryClient, locale }, params: { slug } }) => {
-		const { post } = await queryClient.query({ ...postQueryOptions(locale, slug), staleTime: 'static' })
+		const { post } = await queryClient.query(postQueryOptions(locale, slug))
 		await preloadPostBody(post.filePath)
 		return { title: post.title, description: post.description }
 	},

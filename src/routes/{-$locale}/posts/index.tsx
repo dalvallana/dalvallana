@@ -7,7 +7,7 @@ import { postsQueryOptions } from '@/queries/posts'
 
 export const Route = createFileRoute('/{-$locale}/posts/')({
 	loader: async ({ context: { queryClient, locale } }) => {
-		await queryClient.query({ ...postsQueryOptions(locale), staleTime: 'static' })
+		await queryClient.query(postsQueryOptions(locale))
 	},
 	component: PostsPage,
 })
