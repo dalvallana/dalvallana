@@ -6,10 +6,14 @@ import viteReact from '@vitejs/plugin-react'
 import remarkFrontmatter from 'remark-frontmatter'
 import { defineConfig } from 'vite'
 
+import { excludeDrafts } from './vite/exclude-drafts'
+
 export default defineConfig({
 	server: { port: 3000 },
 	resolve: { tsconfigPaths: true },
 	plugins: [
+		// Must precede the MDX plugin (same `pre` level, so array order decides).
+		excludeDrafts(),
 		// Frontmatter is read by content-collections; here it is only stripped from the body.
 		{ enforce: 'pre', ...mdx({ remarkPlugins: [remarkFrontmatter] }) },
 		tailwindcss(),
