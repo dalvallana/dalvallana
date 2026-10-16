@@ -25,6 +25,7 @@ test('a missing translation falls back to English with a notice', async ({ page 
 	await page.goto('/es/posts/only-in-english')
 	await expect(page.getByRole('heading', { level: 1, name: 'Only in English' })).toBeVisible()
 	await expect(page.getByText('aún no está disponible en español')).toBeVisible()
+	await expect(page.locator('article')).toHaveAttribute('lang', 'en')
 })
 
 test('unknown posts and locales respond with 404', async ({ page }) => {

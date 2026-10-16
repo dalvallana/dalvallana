@@ -28,9 +28,9 @@ function PostPage() {
 	const Body = getPostBody(post.filePath)
 
 	return (
-		<article>
+		<article lang={fallback ? post.locale : undefined}>
 			{fallback ? (
-				<p role="note" className="mb-8 rounded-md border px-4 py-3 text-sm text-muted-foreground">
+				<p role="note" lang={locale} className="mb-8 rounded-md border px-4 py-3 text-sm text-muted-foreground">
 					{messages[locale].fallbackNotice}
 				</p>
 			) : null}
