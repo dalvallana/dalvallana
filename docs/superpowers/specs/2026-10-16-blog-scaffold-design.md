@@ -17,11 +17,11 @@ The app is client-first: data goes through TanStack Query so it is cached on the
 - TanStack Router with an optional locale segment, and TanStack Query integrated with SSR.
 - MDX posts managed by content-collections, with one sample post in `en` and `es` that uses a custom React component.
 - Three routes: home, posts index, post page.
-- Tailwind v4, shadcn using the React Aria base, and light and dark themes via a cookie.
+- Tailwind v4, shadcn using the React Aria base, and light and dark themes via a cookie and `data-theme`.
 - Zod 4 for frontmatter, env vars, and route and server function inputs.
 - Vitest browser mode (Playwright provider), Playwright e2e tests, and axe accessibility checks.
 - Oxlint and Oxfmt configured from the existing Biome rules (mapping below).
-- tsgo for type-checking, using the user's tsconfig plus three agreed additions.
+- tsgo for type-checking, using the user's tsconfig plus a few agreed additions.
 - Lefthook pre-commit, GitHub Actions running the tests, and Dependabot.
 
 **Out of scope (later)**
@@ -30,23 +30,23 @@ Visual design, CMS or database, i18n library for UI strings, analytics, error mo
 
 ## Stack and runtime
 
-| Concern                         | Choice                                                                                    |
-| ------------------------------- | ----------------------------------------------------------------------------------------- |
-| Package manager / script runner | Bun (`packageManager` pinned in `package.json`)                                           |
-| Runtime (dev, test, build)      | Node LTS (pinned in `.nvmrc`)                                                             |
-| Framework                       | TanStack Start, Router, Query                                                             |
-| Content                         | content-collections (frontmatter) + `@mdx-js/rollup` (MDX bodies)                         |
-| UI                              | shadcn (React Aria base: `react-aria-components`), Tailwind v4, `@tailwindcss/typography` |
-| Validation                      | Zod 4                                                                                     |
-| Types                           | TypeScript 7 (`tsgo`; `@typescript/native-preview` if 7.0 stable is not out)              |
-| Unit/component tests            | Vitest browser mode, Playwright provider, `vitest-browser-react`                          |
-| E2E                             | Playwright, `@axe-core/playwright`                                                        |
-| Lint / format                   | Oxlint (type-aware), Oxfmt                                                                |
-| Git hooks                       | Lefthook                                                                                  |
-| CI                              | GitHub Actions (tests only)                                                               |
-| Dependency updates              | Dependabot                                                                                |
+| Concern                         | Choice                                                                                                           |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Package manager / script runner | Bun (`packageManager` pinned in `package.json`)                                                                  |
+| Runtime (dev, test, build)      | Node LTS (pinned in `.nvmrc`)                                                                                    |
+| Framework                       | TanStack Start, Router, Query                                                                                    |
+| Content                         | content-collections (frontmatter) + `@mdx-js/rollup` (MDX bodies)                                                |
+| UI                              | shadcn (style `aria-nova`, `react-aria-components`), Tailwind v4, `@tailwindcss/typography`, `cn` (shadcn-ui/cn) |
+| Validation                      | Zod 4                                                                                                            |
+| Types                           | TypeScript 7 (`tsgo`; `@typescript/native-preview` if 7.0 stable is not out)                                     |
+| Unit/component tests            | Vitest browser mode, Playwright provider, `vitest-browser-react`                                                 |
+| E2E                             | Playwright, `@axe-core/playwright`                                                                               |
+| Lint / format                   | Oxlint (type-aware), Oxfmt                                                                                       |
+| Git hooks                       | Lefthook                                                                                                         |
+| CI                              | GitHub Actions (tests only)                                                                                      |
+| Dependency updates              | Dependabot                                                                                                       |
 
-**Rule: no runtime-only Node APIs in app code.** Cloudflare Workers is a likely deploy target. App code must not use `fs`, `path` or similar at request time. Build-time tooling (Vite plugins, content-collections config) may use them.
+**Rule: no runtime-only Node APIs in app code.** Cloudflare Workers is a likely deploy target. App code must not use `fs`, `path` or similar at request time. Build-time tooling (Vite plugins, content-collections config) may use them. An Oxlint `no-restricted-imports` override on `src/**` enforces this.
 
 ## Project layout
 
@@ -57,14 +57,15 @@ content/
     es/hello-world.mdx
 src/
   routes/
-    __root.tsx                 # html shell, head, theme class, error/notFound components
+    __root.tsx                 # html shell, head, data-theme, error/notFound components
     {-$locale}/
+      route.tsx                # locale validation (beforeLoad) + layout
       index.tsx                # home
       posts/index.tsx          # posts list
       posts/$slug.tsx          # post page
   content/
     posts.ts                   # source boundary: getPosts(locale), getPost(locale, slug)
-    mdx.ts                     # import.meta.glob map of MDX bodies (lazy)
+    mdx.ts                     # import.meta.glob map of MDX bodies, cached lazy components
   queries/
     posts.ts                   # postsQueryOptions(locale), postQueryOptions(locale, slug)
   components/
@@ -72,8 +73,9 @@ src/
     mdx/                       # components available inside posts + mdxComponents map
   lib/
     i18n.ts                    # locales, default locale, parseLocale()
-    theme.ts                   # theme cookie server functions
-  styles/app.css               # Tailwind entry, @theme tokens, dark variant
+    theme.ts                   # theme values, cookie parsing, pre-paint script
+    theme-env.ts               # getTheme (isomorphic), persistTheme (browser)
+  styles/app.css               # Tailwind entry, light-dark() tokens, dark variant
   env.ts                       # Zod-validated env
   router.tsx                   # createRouter + setupRouterSsrQueryIntegration
 content-collections.ts
@@ -103,9 +105,9 @@ tsconfig.json
 2. **MDX bodies (`src/content/mdx.ts`)**
    - `@mdx-js/rollup` is registered in `vite.config.ts` before the React plugin. `remark-frontmatter` and `remark-mdx-frontmatter` strip the frontmatter from the compiled body.
    - `import.meta.glob('/content/posts/**/*.mdx')` gives a lazy map from path to module. Each post is its own chunk.
-   - `loadPostBody(filePath)` returns the module's default component and throws `notFound()` for unknown paths.
+   - `getPostBody(filePath)` returns a cached `React.lazy` component per post, so it is stable across renders. `preloadPostBody(filePath)` starts the chunk load in the loader. Both throw `notFound()` for unknown paths.
 3. **Source boundary (`src/content/posts.ts`)**
-   - `getPosts(locale)` and `getPost(locale, slug)` are Start server functions, with Zod-validated inputs. They return plain JSON metadata.
+   - `getPosts(locale)` and `getPost(locale, slug)` are Start server functions, with Zod-validated inputs (`.validator()`; Start 1.169 removed `.inputValidator()`). They return plain JSON metadata.
    - A future CMS or database replaces only this file (plus the MDX module map). Routes and queries stay unchanged.
 4. **Queries (`src/queries/posts.ts`)**
    - `queryOptions` factories for those functions, with keys `['posts', locale]` and `['post', locale, slug]`.
@@ -115,26 +117,28 @@ tsconfig.json
 ## Routing and locales
 
 - **Locales:** `en` (default, no URL prefix) and `es` (`/es/...`).
-- **Locale check:** `{-$locale}` is validated in `beforeLoad` with `parseLocale()`. A missing segment means `en`, and an unknown one throws `notFound()`.
+- **Locale check:** `{-$locale}` is validated with `parseLocale()` in the `beforeLoad` of the `{-$locale}` layout route (`src/routes/{-$locale}/route.tsx`). A missing segment means `en`, and an unknown one throws `notFound()`.
 - **Post loader:**
-  1. `queryClient.ensureQueryData(postQueryOptions(locale, slug))`.
-  2. Preload the body via `loadPostBody(post.filePath)`.
-  3. Render with `useSuspenseQuery` plus the loaded body component, passing `components={mdxComponents}`.
+  1. `queryClient.query({ ...postQueryOptions(locale, slug), staleTime: 'static' })` (TanStack Query deprecated `ensureQueryData`). The posts index loader does the same.
+  2. Preload the body via `preloadPostBody(post.filePath)`.
+  3. Render with `useSuspenseQuery` plus `getPostBody(post.filePath)`, passing `components={mdxComponents}`. The `<Body />` render has one justified `react/static-components` lint disable, because the lazy component is cached and stable.
 - **Missing translation:** if a post doesn't exist in `es` but exists in `en`, show the English post with a "not available in Spanish" notice instead of a 404. `getPost` returns `{ post, fallback: boolean }`.
 - **Head:** set per route through the Router's `head` (title, description, `lang` on `<html>`).
-- **Prerendering:** Start's prerender config covers `/`, the posts indexes, and every post in every locale. Everything else is SSR.
+- **Prerendering:** Start's prerender config lists `/`, `/es`, `/posts` and `/es/posts`; posts are found by crawling links (`crawlLinks: true`, `failOnError: true`). The config doesn't read the filesystem. Everything else is SSR.
 
 ## UI and theming
 
 - **shadcn:** initialized with the React Aria base and Tailwind v4 in CSS-first mode. Tokens are CSS variables in `@theme` in `src/styles/app.css`.
 - **Components:** only what the skeleton uses (`Button`, possibly `Link`).
 - **Base styling:** neutral palette, system font stack, readable prose width.
-- **Post typography:** `@tailwindcss/typography`, with its colors bound to the theme tokens.
-- **Theme values:** the `theme` cookie holds `light`, `dark` or `system` (default `system`).
-- **Server render:** the root `beforeLoad` reads the cookie through a server function. The root sets `class="dark"` on `<html>` when the theme is `dark`.
-- **`system` mode:** a single inline `<head>` script applies the class from `prefers-color-scheme` before first paint.
-- **Toggle:** calls a server function that sets the cookie, then runs `router.invalidate()`.
-- **Tailwind dark variant:** `@custom-variant dark (&:where(.dark, .dark *));`
+- **Post typography:** `@tailwindcss/typography` via `prose prose-neutral dark:prose-invert`.
+- **Theme values:** the `theme` cookie holds `light`, `dark` or `system` (default `system`). The theme is a `data-theme` attribute on `<html>`, not a `.dark` class.
+- **Colors:** each token is a single `light-dark()` value in `src/styles/app.css`. `color-scheme` picks the side: `light dark` on `:root` (system), forced by `[data-theme='light']` and `[data-theme='dark']`.
+- **Tailwind dark variant:** a block `@custom-variant dark` covering `data-theme='dark'`, and `data-theme='system'` inside `@media (prefers-color-scheme: dark)`.
+- **`system` mode:** needs no JavaScript.
+- **Cookie:** written in the browser by `persistTheme` (`src/lib/theme-env.ts`), which also updates `data-theme`.
+- **Server render:** the root `beforeLoad` reads the cookie via `getTheme` (`createIsomorphicFn`) for SSR pages. Prerendered pages are built with `system`, and a `ScriptOnce` inline script applies the cookie before first paint.
+- **Toggle:** `ThemeToggle` is presentational. `ThemeSwitcher` wraps it in `ClientOnly`, so its label never mismatches during hydration.
 
 ## Error handling
 
@@ -149,7 +153,7 @@ tsconfig.json
 
 ## TypeScript
 
-This is the user's tsconfig with three agreed additions, marked `// added`:
+This is the user's tsconfig with a few agreed additions, marked `// added`:
 
 ```jsonc
 {
@@ -162,8 +166,8 @@ This is the user's tsconfig with three agreed additions, marked `// added`:
 			"@/*": ["./src/*"],
 			"content-collections": ["./.content-collections/generated"], // added
 		},
-		"lib": ["ES2022", "DOM", "DOM.Iterable"],
-		"types": ["vite/client", "mdx"], // added "mdx" (needs @types/mdx)
+		"lib": ["ES2023", "DOM", "DOM.Iterable"], // added ES2023 (for toSorted, required by unicorn/no-array-sort)
+		"types": ["vite/client", "node", "mdx"], // added "node" and "mdx" (needs @types/mdx)
 
 		/* Bundler mode */
 		"moduleResolution": "bundler",
@@ -201,6 +205,7 @@ Vitest browser-mode types (`expect.element`, Playwright provider) are referenced
 
 **Plugins:** `react`, `jsx-a11y`, `vitest`, `import`, `typescript`, `unicorn`, `oxc`.
 **Categories:** `correctness` and `suspicious` at `error` (stands in for Biome's `recommended` plus the project, react and test domains).
+**Also:** `react/react-in-jsx-scope` is off (new JSX transform). An override on `src/**` sets `no-restricted-imports` to ban Node built-ins (see the stack rule above).
 **Type-aware mode:** on (`oxlint --type-aware`), needed for the rules marked (TA).
 **Ignored:** `**/*.gen.ts`, `.content-collections/**`.
 
@@ -285,7 +290,7 @@ Tests use `vitest-browser-react` for `render`, `page` and `userEvent` from `vite
 Initial tests:
 
 - `parseLocale()` handles valid, missing and unknown locales.
-- The theme toggle renders, cycles through values, and calls the server function (mocked).
+- The theme toggle renders, cycles through values, and calls `onThemeChange` (mocked).
 - A sample MDX post renders with its custom component.
 
 **Playwright (`playwright.config.ts`).** Tests run against the production build: `webServer` runs `bun run build && bun run preview`.
@@ -296,7 +301,7 @@ Specs in `e2e/`:
 - The posts list links to the post, and the post body renders, including the custom component.
 - `/es/posts/hello-world` serves the Spanish post.
 - `/posts/does-not-exist` and `/xx/` respond with status 404.
-- The theme persists across a reload, and the server response's `<html>` already has the `dark` class (no flash).
+- The theme persists across a reload, and the server response's `<html>` already has `data-theme="dark"` (no flash).
 - Axe (`@axe-core/playwright`) runs on each visited page in light and dark mode, and fails on `serious` and `critical` violations.
 
 ## Tooling
@@ -314,13 +319,15 @@ Specs in `e2e/`:
 1. Set up Node from `.nvmrc`.
 2. Set up Bun.
 3. `bun install --frozen-lockfile`.
-4. Install Playwright Chromium (cached).
+4. Install Playwright Chromium (not cached; Playwright advises against caching browsers).
 5. `bun run test`.
 6. `bun run test:e2e`.
 
 It runs no lint or type checks; those happen in the hook.
 
 **`.github/dependabot.yml`:** weekly updates for `npm` and `github-actions`, with minor and patch updates grouped.
+
+**Preview:** `bun run preview` runs `srvx` on port 4173. `bunfig.toml` pins the public npm registry.
 
 **Accepted gap:** Dependabot pull requests and `--no-verify` commits skip the hook, so they get tests only.
 
