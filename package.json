@@ -4,6 +4,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
+		"typecheck": "tsc --noEmit",
 		"lint": "oxlint",
 		"format": "oxfmt",
 		"format:check": "oxfmt --check",
