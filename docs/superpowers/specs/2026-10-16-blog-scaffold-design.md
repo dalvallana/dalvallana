@@ -18,7 +18,7 @@ The app is client-first: data goes through TanStack Query so it is cached on the
 - MDX posts managed by content-collections, with one sample post in `en` and `es` that uses a custom React component.
 - Three routes: home, posts index, post page.
 - Tailwind v4, shadcn using the React Aria base, and light and dark themes via a cookie and `data-theme`.
-- Zod 4 for frontmatter, env vars, and route and server function inputs.
+- Zod 4 for frontmatter, server function inputs and theme cookie values.
 - Vitest browser mode (Playwright provider), Playwright e2e tests, and axe accessibility checks.
 - Oxlint and Oxfmt configured from the existing Biome rules (mapping below).
 - TypeScript 7 (`tsc`, the native compiler) for type-checking, using the user's tsconfig plus a few agreed additions.
@@ -26,7 +26,7 @@ The app is client-first: data goes through TanStack Query so it is cached on the
 
 **Out of scope (later)**
 
-Visual design, CMS or database, i18n library for UI strings, analytics, error monitoring, the hosting adapter, RSS, sitemap, image optimization, Knip.
+Visual design, CMS or database, i18n library for UI strings, env validation, analytics, error monitoring, the hosting adapter, RSS, sitemap, image optimization, Knip.
 
 ## Stack and runtime
 
@@ -54,18 +54,21 @@ Visual design, CMS or database, i18n library for UI strings, analytics, error mo
 content/
   posts/
     en/hello-world.mdx
+    en/only-in-english.mdx     # exercises the language fallback
     es/hello-world.mdx
 src/
   routes/
     __root.tsx                 # html shell, head, data-theme, error/notFound components
     {-$locale}/
-      route.tsx                # locale validation (beforeLoad) + layout
+      route.tsx                # locale validation and `/en` redirect (beforeLoad) + layout
       index.tsx                # home
       posts/index.tsx          # posts list
       posts/$slug.tsx          # post page
   content/
     posts.ts                   # source boundary: getPosts(locale), getPost(locale, slug)
-    mdx.ts                     # import.meta.glob map of MDX bodies, cached lazy components
+    select.ts                  # pure locale/draft filtering, ordering and fallback
+    drafts.ts                  # isDraftMdx(): frontmatter `draft: true` check
+    mdx.ts                     # import.meta.glob map of MDX bodies, cached components
   queries/
     posts.ts                   # postsQueryOptions(locale), postQueryOptions(locale, slug)
   components/
@@ -76,10 +79,10 @@ src/
     theme.ts                   # theme values, cookie parsing, pre-paint script
     theme-env.ts               # getTheme (isomorphic), persistTheme (browser)
   styles/app.css               # Tailwind entry, light-dark() tokens, dark variant
-  env.ts                       # Zod-validated env
   router.tsx                   # createRouter + setupRouterSsrQueryIntegration
 content-collections.ts
 e2e/
+vite/exclude-drafts.ts         # build-only plugin that empties draft MDX sources
 vite.config.ts
 vitest.config.ts
 playwright.config.ts
@@ -98,32 +101,33 @@ tsconfig.json
 
 1. **Collection (`content-collections.ts`)**
    - Reads `content/posts/**/*.mdx`.
-   - The frontmatter schema (Zod) covers `title` (string), `description` (string), `date` (coerced date), `draft` (boolean, default `false`) and `tags` (string array, default `[]`).
+   - The frontmatter schema (Zod) covers `title` (string), `description` (string), `date` (ISO date string, `z.iso.date()`), `draft` (boolean, default `false`) and `tags` (string array, default `[]`).
    - Computed fields: `locale` (first path segment, must be a supported locale), `slug` (file name without extension), and `filePath` (the key into the MDX module map).
-   - Drafts are excluded in production builds.
+   - Drafts are listed only in dev (`import.meta.env.DEV`); production hides their metadata.
+   - Draft bodies are also kept out of production chunks: `vite/exclude-drafts.ts` (`apply: 'build'`, `enforce: 'pre'`, placed before the MDX plugin) replaces any `content/posts/**/*.mdx` whose frontmatter sets `draft: true` with an empty document, using `isDraftMdx()` from `src/content/drafts.ts`.
    - Invalid frontmatter fails the dev server and the build.
 2. **MDX bodies (`src/content/mdx.ts`)**
-   - `@mdx-js/rollup` is registered in `vite.config.ts` before the React plugin. `remark-frontmatter` and `remark-mdx-frontmatter` strip the frontmatter from the compiled body.
+   - `@mdx-js/rollup` is registered in `vite.config.ts` before the React plugin. `remark-frontmatter` strips the frontmatter from the compiled body; content-collections reads it separately (`parser: 'frontmatter-only'`).
    - `import.meta.glob('/content/posts/**/*.mdx')` gives a lazy map from path to module. Each post is its own chunk.
-   - `getPostBody(filePath)` returns a cached `React.lazy` component per post, so it is stable across renders. `preloadPostBody(filePath)` starts the chunk load in the loader. Both throw `notFound()` for unknown paths.
+   - `preloadPostBody(filePath)` loads the chunk in the loader and caches the module's default component. `getPostBody(filePath)` returns that resolved component when cached, so SSR and prerendered HTML contain the body inline instead of a hidden Suspense segment revealed by JavaScript; otherwise it returns a cached `React.lazy` component. Either way it is stable across renders. Both throw `notFound()` for unknown paths.
 3. **Source boundary (`src/content/posts.ts`)**
    - `getPosts(locale)` and `getPost(locale, slug)` are Start server functions, with Zod-validated inputs (`.validator()`; Start 1.169 removed `.inputValidator()`). They return plain JSON metadata.
    - A future CMS or database replaces only this file (plus the MDX module map). Routes and queries stay unchanged.
 4. **Queries (`src/queries/posts.ts`)**
    - `queryOptions` factories for those functions, with keys `['posts', locale]` and `['post', locale, slug]`.
-   - Default `staleTime` is 5 minutes; content only changes on deploy.
+   - Both factories set `staleTime: 'static'`, because content only changes on deploy, so loaders and `useSuspenseQuery` share one policy. The router-level default (5 minutes) applies to other queries.
    - Errors from `notFound()` are not retried.
 
 ## Routing and locales
 
 - **Locales:** `en` (default, no URL prefix) and `es` (`/es/...`).
-- **Locale check:** `{-$locale}` is validated with `parseLocale()` in the `beforeLoad` of the `{-$locale}` layout route (`src/routes/{-$locale}/route.tsx`). A missing segment means `en`, and an unknown one throws `notFound()`.
+- **Locale check:** `{-$locale}` is validated with `parseLocale()` in the `beforeLoad` of the `{-$locale}` layout route (`src/routes/{-$locale}/route.tsx`). A missing segment means `en`, and an unknown one throws `notFound()`. An explicit `en` prefix (`/en`, `/en/posts/...`) redirects with a 301 to the unprefixed URL, so default-locale pages have one address.
 - **Post loader:**
-  1. `queryClient.query({ ...postQueryOptions(locale, slug), staleTime: 'static' })` (TanStack Query deprecated `ensureQueryData`). The posts index loader does the same.
-  2. Preload the body via `preloadPostBody(post.filePath)`.
-  3. Render with `useSuspenseQuery` plus `getPostBody(post.filePath)`, passing `components={mdxComponents}`. The `<Body />` render has one justified `react/static-components` lint disable, because the lazy component is cached and stable.
-- **Missing translation:** if a post doesn't exist in `es` but exists in `en`, show the English post with a "not available in Spanish" notice instead of a 404. `getPost` returns `{ post, fallback: boolean }`.
-- **Head:** set per route through the Router's `head` (title, description, `lang` on `<html>`).
+  1. `queryClient.query(postQueryOptions(locale, slug))` (TanStack Query deprecated `ensureQueryData`). The posts index loader does the same with `postsQueryOptions(locale)`.
+  2. Await `preloadPostBody(post.filePath)` so the body renders without suspending.
+  3. Render with `useSuspenseQuery` plus `getPostBody(post.filePath)`, passing `components={mdxComponents}`. The `<Body />` render has one justified `react/static-components` lint disable, because the component is cached and stable. The `<Suspense>` boundary stays for cases where the body is not preloaded yet (such as hydration).
+- **Missing translation:** if a post doesn't exist in `es` but exists in `en`, show the English post with a "not available in Spanish" notice instead of a 404. `getPost` returns `{ post, fallback: boolean }`. The fallback `<article>` gets `lang` set to the post's locale (`en`), while the notice keeps the page language.
+- **Head:** the root route sets the site title and `lang` on `<html>`; only the post route overrides the title and adds a description, through the Router's `head`.
 - **Prerendering:** Start's prerender config lists `/`, `/es`, `/posts` and `/es/posts`; posts are found by crawling links (`crawlLinks: true`, `failOnError: true`). The config doesn't read the filesystem. Everything else is SSR.
 
 ## UI and theming
@@ -145,11 +149,10 @@ tsconfig.json
 | Case                                     | Behavior                                                  |
 | ---------------------------------------- | --------------------------------------------------------- |
 | Unknown locale or slug                   | `throw notFound()`, real 404 status from SSR              |
-| Post missing in `es` but present in `en` | English post plus a notice                                |
+| Post missing in `es` but present in `en` | English post (`lang="en"`) plus a notice                  |
 | Any route error                          | Root `errorComponent`: plain message, details only in dev |
 | Not found                                | Root `notFoundComponent`: 404 page with a link home       |
 | Invalid frontmatter                      | Build/dev failure via content-collections validation      |
-| Invalid env                              | `src/env.ts` throws at server start                       |
 
 ## TypeScript
 
@@ -186,8 +189,6 @@ This is the user's tsconfig with a few agreed additions, marked `// added`:
 	},
 }
 ```
-
-Vitest browser-mode types (`expect.element`, Playwright provider) are referenced from a test-only declaration file. They are not added to `types`, so test globals stay out of app code.
 
 ## Formatting (Oxfmt)
 
@@ -290,17 +291,22 @@ Tests use `vitest-browser-react` for `render`, `page` and `userEvent` from `vite
 Initial tests:
 
 - `parseLocale()` handles valid, missing and unknown locales.
+- `selectPosts()`/`selectPost()` filter by locale and draft status, order newest first (ties by slug), and fall back to English.
+- `isDraftMdx()` only matches `draft: true` inside the leading frontmatter (including CRLF files).
 - The theme toggle renders, cycles through values, and calls `onThemeChange` (mocked).
 - A sample MDX post renders with its custom component.
 
-**Playwright (`playwright.config.ts`).** Tests run against the production build: `webServer` runs `bun run build && bun run preview`.
+**Playwright (`playwright.config.ts`).** Tests run against the production build: `webServer` runs `bun run build && bun run preview`. Locally the reporter is `list`; in CI it is `github` plus `html` (`open: 'never'`), and on failure the workflow uploads `playwright-report` and `test-results` as an artifact.
 
 Specs in `e2e/`:
 
 - Home renders.
 - The posts list links to the post, and the post body renders, including the custom component.
+- With JavaScript disabled, `/posts/hello-world` still shows the MDX body (it is in the HTML).
 - `/es/posts/hello-world` serves the Spanish post.
-- `/posts/does-not-exist` and `/xx/` respond with status 404.
+- `/es/posts/only-in-english` shows the English post with the notice, and the `article` has `lang="en"`.
+- `/en/posts/hello-world` ends at `/posts/hello-world`, and `/en` responds with 301.
+- `/posts/does-not-exist` and `/xx` respond with status 404.
 - The theme persists across a reload, and the server response's `<html>` already has `data-theme="dark"` (no flash).
 - Axe (`@axe-core/playwright`) runs on each visited page in light and dark mode, and fails on `serious` and `critical` violations.
 
@@ -325,7 +331,7 @@ Specs in `e2e/`:
 
 It runs no lint or type checks; those happen in the hook.
 
-**`.github/dependabot.yml`:** weekly updates for `npm` and `github-actions`, with minor and patch updates grouped.
+**`.github/dependabot.yml`:** weekly updates for `bun` and `github-actions`, with minor and patch updates grouped.
 
 **Preview:** `bun run preview` runs `srvx` on port 4173. `bunfig.toml` pins the public npm registry.
 
