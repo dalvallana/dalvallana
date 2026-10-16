@@ -1,0 +1,11 @@
+{
+	"name": "dalvallana",
+	"private": true,
+	"type": "module",
+	"packageManager": "bun@1.3.0",
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "srvx --prod --port 4173 -s ../client dist/server/server.js"
+	}
+}

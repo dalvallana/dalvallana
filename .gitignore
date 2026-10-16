@@ -1,0 +1,10 @@
+node_modules
+dist
+.output
+.tanstack
+.content-collections
+test-results
+playwright-report
+**/__screenshots__
+*.local
+.DS_Store

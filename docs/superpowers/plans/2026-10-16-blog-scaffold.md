@@ -32,8 +32,10 @@ Each departure comes from API research. Task 15 updates the spec to match.
 
 ## Prerequisites (user)
 
-- **The `npm.apple.com` token must work.** `npm view @tanstack/react-start version` has to print a version, not `E401`. If it fails, refresh the token in `~/.npmrc` before Task 1.
-- **The lockfile must not point at the internal registry.** After Task 1, check `bun.lock` for `npm.apple.com` URLs. If they're present, GitHub Actions can't install from it, and Task 14 covers what to do.
+- **The project uses the public npm registry.** `bunfig.toml` pins `registry.npmjs.org`, overriding the user-level `.npmrc` for this repo.
+- **The user installs all dependencies up front.** The agent sandbox can't reach package registries. Every **Install** step in this plan is therefore *verify only*: run `bun pm ls 2>/dev/null | grep -E '<pkg>'` for the listed packages. If one is missing, stop and ask the user to install it; never try `bun add` yourself.
+- **Network-only commands are run by the user.** These are `bunx playwright install chromium` (done up front) and `bunx shadcn add button` (Task 5; the agent pauses and asks).
+- **Lefthook's postinstall may already have installed a git hook.** If `.git/hooks/pre-commit` exists before Task 3, run `bunx lefthook uninstall` during Task 1. Task 3 installs it properly.
 
 ## File structure
 
@@ -96,6 +98,8 @@ Tests sit next to the code they test: `*.test.ts` runs in Node, `*.test.tsx` run
 **Files:**
 - Create: `.gitignore`, `.nvmrc`, `package.json`, `tsconfig.json`, `vite.config.ts`, `src/router.tsx`, `src/routes/__root.tsx`, `src/routes/{-$locale}/index.tsx`, `src/lib/site.ts`
 
+> Steps 1–3 are already done: `.nvmrc`, `.gitignore`, `package.json` and `bunfig.toml` exist. Check that they match the plan and move on.
+
 - [ ] **Step 1: Create `.nvmrc`**
 
 ```
@@ -154,7 +158,9 @@ Check the lockfile for internal registry URLs:
 grep -c "npm.apple.com" bun.lock || true
 ```
 
-Expected: `0`. If the count is greater than 0, note it for Task 14.
+Expected: `0`.
+
+If `.git/hooks/pre-commit` exists (installed by Lefthook's postinstall), run `bunx lefthook uninstall`. Commits before Task 3 should not run hooks.
 
 - [ ] **Step 5: Create `tsconfig.json`**
 
@@ -316,7 +322,7 @@ Expected: `<h1>dalvallana</h1>`. If `srvx` rejects `--port`, check `bunx srvx --
 - [ ] **Step 13: Commit**
 
 ```bash
-git add .gitignore .nvmrc package.json bun.lock tsconfig.json vite.config.ts src
+git add .gitignore .nvmrc bunfig.toml package.json bun.lock tsconfig.json vite.config.ts src
 git commit -m "Scaffold TanStack Start app with Router and Query"
 ```
 
@@ -810,8 +816,10 @@ export { cn } from 'cn'
 
 - [ ] **Step 5: Add the shadcn Button**
 
+**Pause and ask the user** to run this, because it needs network access to ui.shadcn.com:
+
 ```bash
-bunx shadcn@latest add button
+bunx shadcn add button
 ```
 
 Expected: `src/components/ui/button.tsx` is created, and `react-aria-components`, `class-variance-authority` and `lucide-react` are added to `package.json`. If the CLI asks to overwrite `src/styles/app.css` or add CSS variables, answer **no**; the tokens above are the source of truth.
@@ -2241,7 +2249,7 @@ updates:
 grep -c "npm.apple.com" bun.lock || true
 ```
 
-Expected: `0`. If it's greater than 0, **stop and ask the user**. CI on GitHub can't reach the internal registry, so either the lockfile has to be regenerated against the public registry, or CI needs registry configuration. That's the user's call.
+Expected: `0` (`bunfig.toml` pins the public registry). If it's greater than 0, **stop and ask the user**; CI on GitHub can't reach the internal registry.
 
 - [ ] **Step 4: Commit**
 
@@ -2260,7 +2268,7 @@ git commit -m "Add CI test workflow and Dependabot"
 - [ ] **Step 1: Run every check from a clean state**
 
 ```bash
-rm -rf node_modules dist .content-collections && bun install --frozen-lockfile
+rm -rf dist .content-collections
 bun run dev & sleep 5; kill %1   # regenerates .content-collections for typecheck
 bun run format:check && bun run lint && bun run typecheck && bun run test && bun run test:e2e
 ```
