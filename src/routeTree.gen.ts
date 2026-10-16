@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
 import { Route as Char123LocaleChar125PostsIndexRouteImport } from './routes/{-$locale}/posts/index'
+import { Route as Char123LocaleChar125PostsSlugRouteImport } from './routes/{-$locale}/posts/$slug'
 
 const Char123LocaleChar125RouteRoute =
   Char123LocaleChar125RouteRouteImport.update({
@@ -31,28 +32,46 @@ const Char123LocaleChar125PostsIndexRoute =
     path: '/posts/',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
+const Char123LocaleChar125PostsSlugRoute =
+  Char123LocaleChar125PostsSlugRouteImport.update({
+    id: '/posts/$slug',
+    path: '/posts/$slug',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
+  '/{-$locale}/posts/$slug': typeof Char123LocaleChar125PostsSlugRoute
   '/{-$locale}/posts/': typeof Char123LocaleChar125PostsIndexRoute
 }
 export interface FileRoutesByTo {
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
+  '/{-$locale}/posts/$slug': typeof Char123LocaleChar125PostsSlugRoute
   '/{-$locale}/posts': typeof Char123LocaleChar125PostsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
+  '/{-$locale}/posts/$slug': typeof Char123LocaleChar125PostsSlugRoute
   '/{-$locale}/posts/': typeof Char123LocaleChar125PostsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/{-$locale}' | '/{-$locale}/' | '/{-$locale}/posts/'
+  fullPaths:
+    | '/{-$locale}'
+    | '/{-$locale}/'
+    | '/{-$locale}/posts/$slug'
+    | '/{-$locale}/posts/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/{-$locale}' | '/{-$locale}/posts'
-  id: '__root__' | '/{-$locale}' | '/{-$locale}/' | '/{-$locale}/posts/'
+  to: '/{-$locale}' | '/{-$locale}/posts/$slug' | '/{-$locale}/posts'
+  id:
+    | '__root__'
+    | '/{-$locale}'
+    | '/{-$locale}/'
+    | '/{-$locale}/posts/$slug'
+    | '/{-$locale}/posts/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -82,17 +101,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125PostsIndexRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
+    '/{-$locale}/posts/$slug': {
+      id: '/{-$locale}/posts/$slug'
+      path: '/posts/$slug'
+      fullPath: '/{-$locale}/posts/$slug'
+      preLoaderRoute: typeof Char123LocaleChar125PostsSlugRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
   }
 }
 
 interface Char123LocaleChar125RouteRouteChildren {
   Char123LocaleChar125IndexRoute: typeof Char123LocaleChar125IndexRoute
+  Char123LocaleChar125PostsSlugRoute: typeof Char123LocaleChar125PostsSlugRoute
   Char123LocaleChar125PostsIndexRoute: typeof Char123LocaleChar125PostsIndexRoute
 }
 
 const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChildren =
   {
     Char123LocaleChar125IndexRoute: Char123LocaleChar125IndexRoute,
+    Char123LocaleChar125PostsSlugRoute: Char123LocaleChar125PostsSlugRoute,
     Char123LocaleChar125PostsIndexRoute: Char123LocaleChar125PostsIndexRoute,
   }
 
