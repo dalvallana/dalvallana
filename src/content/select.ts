@@ -17,7 +17,7 @@ type SelectOptions = { includeDrafts: boolean }
 
 export function selectPosts(posts: readonly PostMeta[], locale: Locale, { includeDrafts }: SelectOptions) {
 	const visible = posts.filter((post) => post.locale === locale && (includeDrafts || !post.draft))
-	return visible.toSorted((a, b) => b.date.localeCompare(a.date))
+	return visible.toSorted((a, b) => b.date.localeCompare(a.date) || a.slug.localeCompare(b.slug))
 }
 
 export function selectPost(

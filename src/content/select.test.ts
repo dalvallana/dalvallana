@@ -29,6 +29,11 @@ describe('selectPosts', () => {
 		expect(selectPosts(posts, 'es', { includeDrafts: false }).map((p) => p.filePath)).toEqual(['es/old.mdx'])
 	})
 
+	it('orders posts with the same date by slug', () => {
+		const sameDay = [post({ slug: 'b' }), post({ slug: 'c' }), post({ slug: 'a' })]
+		expect(selectPosts(sameDay, 'en', { includeDrafts: false }).map((p) => p.slug)).toEqual(['a', 'b', 'c'])
+	})
+
 	it('includes drafts when asked', () => {
 		expect(selectPosts(posts, 'en', { includeDrafts: true }).map((p) => p.slug)).toEqual(['wip', 'new', 'old'])
 	})

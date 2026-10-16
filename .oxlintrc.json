@@ -72,7 +72,18 @@
 							"process",
 							"url",
 							"buffer",
-							"stream"
+							"stream",
+							"util",
+							"events",
+							"http",
+							"https",
+							"net",
+							"zlib",
+							"module",
+							"worker_threads",
+							"assert",
+							"dns",
+							"tls"
 						],
 						"patterns": [
 							{ "group": ["node:*"], "message": "App code must not use Node built-ins (Cloudflare Workers target)." }
