@@ -21,7 +21,7 @@ The app is client-first: data goes through TanStack Query so it is cached on the
 - Zod 4 for frontmatter, env vars, and route and server function inputs.
 - Vitest browser mode (Playwright provider), Playwright e2e tests, and axe accessibility checks.
 - Oxlint and Oxfmt configured from the existing Biome rules (mapping below).
-- tsgo for type-checking, using the user's tsconfig plus a few agreed additions.
+- TypeScript 7 (`tsc`, the native compiler) for type-checking, using the user's tsconfig plus a few agreed additions.
 - Lefthook pre-commit, GitHub Actions running the tests, and Dependabot.
 
 **Out of scope (later)**
@@ -38,7 +38,7 @@ Visual design, CMS or database, i18n library for UI strings, analytics, error mo
 | Content                         | content-collections (frontmatter) + `@mdx-js/rollup` (MDX bodies)                                                |
 | UI                              | shadcn (style `aria-nova`, `react-aria-components`), Tailwind v4, `@tailwindcss/typography`, `cn` (shadcn-ui/cn) |
 | Validation                      | Zod 4                                                                                                            |
-| Types                           | TypeScript 7 (`tsgo`; `@typescript/native-preview` if 7.0 stable is not out)                                     |
+| Types                           | TypeScript 7.0 (`tsc` is the native Go compiler)                                                                 |
 | Unit/component tests            | Vitest browser mode, Playwright provider, `vitest-browser-react`                                                 |
 | E2E                             | Playwright, `@axe-core/playwright`                                                                               |
 | Lint / format                   | Oxlint (type-aware), Oxfmt                                                                                       |
@@ -206,7 +206,7 @@ Vitest browser-mode types (`expect.element`, Playwright provider) are referenced
 **Plugins:** `react`, `jsx-a11y`, `vitest`, `import`, `typescript`, `unicorn`, `oxc`.
 **Categories:** `correctness` and `suspicious` at `error` (stands in for Biome's `recommended` plus the project, react and test domains).
 **Also:** `react/react-in-jsx-scope` is off (new JSX transform). An override on `src/**` sets `no-restricted-imports` to ban Node built-ins (see the stack rule above).
-**Type-aware mode:** on (`oxlint --type-aware`), needed for the rules marked (TA).
+**Type-aware mode:** on (`"options": { "typeAware": true }` in `.oxlintrc.json`), needed for the rules marked (TA).
 **Ignored:** `**/*.gen.ts`, `.content-collections/**`.
 
 ### Direct mappings (47)
@@ -268,7 +268,7 @@ Severity is `error` unless noted.
 | Biome                                | Handling                                     |
 | ------------------------------------ | -------------------------------------------- |
 | style/noEnum                         | `erasableSyntaxOnly` in tsconfig             |
-| correctness/noUndeclaredVariables    | Covered by tsgo; `no-undef` not enabled      |
+| correctness/noUndeclaredVariables    | Covered by `tsc`; `no-undef` not enabled     |
 | performance/noDelete                 | Partial: typescript/no-dynamic-delete        |
 | performance/noReExportAll            | Partial: oxc/no-barrel-file                  |
 | style/noUnusedTemplateLiteral        | Not covered                                  |
@@ -306,13 +306,13 @@ Specs in `e2e/`:
 
 ## Tooling
 
-**`package.json` scripts:** `dev`, `build`, `preview`, `test` (vitest run), `test:e2e` (playwright test), `lint` (oxlint --type-aware), `format` (oxfmt), `typecheck` (tsgo --noEmit).
+**`package.json` scripts:** `dev`, `build`, `preview`, `test` (vitest run), `test:e2e` (playwright test), `lint` (oxlint), `format` (oxfmt), `typecheck` (tsc --noEmit).
 
 **`lefthook.yml`, pre-commit, in parallel:**
 
 - `oxfmt` on staged files, with fixes re-staged (`stage_fixed: true`).
-- `oxlint --type-aware` on staged files.
-- `tsgo --noEmit` on the whole project.
+- `oxlint` (type-aware via config) on staged files.
+- `bun run typecheck` (`tsc --noEmit`) on the whole project.
 
 **`.github/workflows/test.yml`** runs on push to `main` and on pull requests:
 
