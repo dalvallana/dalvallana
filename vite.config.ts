@@ -6,7 +6,7 @@ import viteReact from '@vitejs/plugin-react'
 import remarkFrontmatter from 'remark-frontmatter'
 import { defineConfig } from 'vite'
 
-import { excludeDrafts } from './vite/exclude-drafts'
+import { excludeDrafts } from './vite/exclude-drafts.ts'
 
 export default defineConfig({
 	server: { port: 3000 },
