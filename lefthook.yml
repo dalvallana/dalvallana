@@ -1,0 +1,14 @@
+glob_matcher: doublestar
+
+pre-commit:
+  parallel: true
+  jobs:
+    - name: format
+      glob: '**/*.{ts,tsx,js,json,jsonc,md,mdx,css,yml,yaml}'
+      run: bunx oxfmt --no-error-on-unmatched-pattern {staged_files}
+      stage_fixed: true
+    - name: lint
+      glob: '**/*.{ts,tsx}'
+      run: bunx oxlint {staged_files}
+    - name: typecheck
+      run: bun run typecheck

@@ -1,0 +1,10 @@
+{
+	"$schema": "./node_modules/oxfmt/configuration_schema.json",
+	"useTabs": true,
+	"printWidth": 120,
+	"singleQuote": true,
+	"semi": false,
+	"sortImports": true,
+	"sortTailwindcss": { "stylesheet": "./src/styles/app.css", "functions": ["cn", "cva"] },
+	"ignorePatterns": ["**/*.gen.ts", ".content-collections/**", "bun.lock"]
+}

@@ -1,0 +1,96 @@
+{
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"plugins": ["eslint", "typescript", "unicorn", "oxc", "react", "jsx-a11y", "import", "vitest"],
+	"categories": { "correctness": "error", "suspicious": "error" },
+	"options": { "typeAware": true },
+	"ignorePatterns": ["**/*.gen.ts", ".content-collections/**"],
+	"rules": {
+		"jsx-a11y/no-noninteractive-element-interactions": "warn",
+		"unicorn/prefer-optional-catch-binding": "error",
+		"no-useless-concat": "error",
+		"unicorn/no-useless-undefined": "error",
+		"no-shadow": "error",
+		"typescript/no-unnecessary-condition": "error",
+		"no-await-in-loop": "error",
+		"oxc/no-barrel-file": "error",
+		"typescript/no-dynamic-delete": "error",
+		"typescript/no-inferrable-types": "error",
+		"no-negated-condition": "error",
+		"no-nested-ternary": "error",
+		"no-param-reassign": "error",
+		"unicorn/prefer-string-slice": "error",
+		"no-else-return": "error",
+		"yoda": "error",
+		"typescript/prefer-as-const": "error",
+		"no-lonely-if": "error",
+		"unicorn/no-lonely-if": "error",
+		"typescript/array-type": ["error", { "default": "array" }],
+		"arrow-body-style": ["error", "as-needed"],
+		"unicorn/new-for-builtins": "error",
+		"react/jsx-curly-brace-presence": ["error", { "props": "never", "children": "never" }],
+		"object-shorthand": ["error", "always"],
+		"typescript/consistent-type-definitions": ["error", "type"],
+		"default-param-last": "error",
+		"default-case": "error",
+		"unicorn/explicit-length-check": "error",
+		"react/jsx-fragments": "error",
+		"grouped-accessor-pairs": "error",
+		"unicorn/numeric-separators-style": "error",
+		"prefer-object-spread": "error",
+		"react/self-closing-comp": "error",
+		"one-var": ["error", "never"],
+		"symbol-description": "error",
+		"unicorn/prefer-string-trim-start-end": "error",
+		"no-alert": "warn",
+		"no-console": "warn",
+		"no-constant-binary-expression": "error",
+		"typescript/no-deprecated": "warn",
+		"vitest/no-duplicate-hooks": "error",
+		"unicorn/no-empty-file": "error",
+		"typescript/no-explicit-any": "error",
+		"import/no-cycle": "error",
+		"no-unassigned-vars": "error",
+		"no-unused-expressions": "error",
+		"no-var": "error",
+		"require-await": "warn",
+		"react/react-in-jsx-scope": "off"
+	},
+	"overrides": [
+		{
+			"files": ["src/**"],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"paths": [
+							"fs",
+							"fs/promises",
+							"path",
+							"os",
+							"child_process",
+							"crypto",
+							"process",
+							"url",
+							"buffer",
+							"stream",
+							"util",
+							"events",
+							"http",
+							"https",
+							"net",
+							"zlib",
+							"module",
+							"worker_threads",
+							"assert",
+							"dns",
+							"tls"
+						],
+						"patterns": [
+							{ "group": ["node:*"], "message": "App code must not use Node built-ins (Cloudflare Workers target)." }
+						]
+					}
+				]
+			}
+		}
+	]
+}

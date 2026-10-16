@@ -1,0 +1,3 @@
+[install]
+# Use the public registry for this project, regardless of user-level .npmrc.
+registry = "https://registry.npmjs.org/"
