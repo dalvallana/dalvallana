@@ -14,7 +14,11 @@ export default defineConfig({
 		{ enforce: 'pre', ...mdx({ remarkPlugins: [remarkFrontmatter] }) },
 		tailwindcss(),
 		contentCollections(),
-		tanstackStart(),
+		tanstackStart({
+			// Locale roots and indexes are listed explicitly; individual posts are found by crawling their links.
+			prerender: { enabled: true, crawlLinks: true, failOnError: true },
+			pages: [{ path: '/' }, { path: '/es' }, { path: '/posts' }, { path: '/es/posts' }],
+		}),
 		viteReact({ include: /\.(mdx|js|jsx|ts|tsx)$/ }),
 	],
 })
