@@ -65,3 +65,13 @@ test.describe('without JavaScript', () => {
 		await expect(page.getByText('This note is a React component rendered from MDX.')).toBeVisible()
 	})
 })
+
+test('default-locale prefixed URLs redirect to unprefixed ones', async ({ page }) => {
+	await page.goto('/en/posts/hello-world')
+	await expect(page).toHaveURL('/posts/hello-world')
+	await expect(page.getByRole('heading', { level: 1, name: 'Hello, world' })).toBeVisible()
+
+	const response = await page.request.get('/en', { maxRedirects: 0 })
+	expect(response.status()).toBe(301)
+	expect(response.headers().location).toMatch(/^(?:http:\/\/localhost:4173)?\/$/)
+})

@@ -1,10 +1,16 @@
-import { createFileRoute, notFound, Outlet } from '@tanstack/react-router'
+import { createFileRoute, notFound, Outlet, redirect } from '@tanstack/react-router'
 
 import { SiteHeader } from '@/components/site-header'
-import { parseLocale } from '@/lib/i18n'
+import { defaultLocale, parseLocale } from '@/lib/i18n'
 
 export const Route = createFileRoute('/{-$locale}')({
-	beforeLoad: ({ params }) => {
+	beforeLoad: ({ params, location }) => {
+		// The default locale lives at unprefixed URLs; `/en/...` would duplicate them.
+		if (params.locale === defaultLocale) {
+			const pathname = location.pathname.slice(`/${defaultLocale}`.length) || '/'
+			const hash = location.hash ? `#${location.hash}` : ''
+			throw redirect({ href: `${pathname}${location.searchStr}${hash}`, statusCode: 301 })
+		}
 		// `{-$locale}` also matches arbitrary first segments like `/anything`.
 		const locale = parseLocale(params.locale)
 		if (!locale) throw notFound()
