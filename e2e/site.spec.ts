@@ -55,3 +55,12 @@ test('the chosen theme persists and the server renders it', async ({ page }) => 
 	const response = await page.request.get('/posts/does-not-exist')
 	expect(await response.text()).toContain('data-theme="dark"')
 })
+
+test.describe('without JavaScript', () => {
+	test.use({ javaScriptEnabled: false })
+
+	test('post bodies are part of the served HTML', async ({ page }) => {
+		await page.goto('/posts/hello-world')
+		await expect(page.getByText('This note is a React component rendered from MDX.')).toBeVisible()
+	})
+})

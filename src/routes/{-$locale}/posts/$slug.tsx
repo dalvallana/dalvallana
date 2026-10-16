@@ -42,7 +42,7 @@ function PostPage() {
 			</header>
 			<div className="prose prose-neutral dark:prose-invert">
 				<Suspense fallback={null}>
-					{/* oxlint-disable-next-line react/static-components -- getPostBody returns a cached, stable lazy component per post */}
+					{/* oxlint-disable-next-line react/static-components -- getPostBody returns a cached, stable component per post */}
 					<Body components={mdxComponents} />
 				</Suspense>
 			</div>

@@ -6,7 +6,9 @@ import { type LazyExoticComponent, lazy } from 'react'
 const modules: Partial<Record<string, () => Promise<MDXModule>>> = import.meta.glob<MDXModule>(
 	'/content/posts/**/*.mdx',
 )
-const bodies = new Map<string, LazyExoticComponent<MDXContent>>()
+// Bodies whose chunk has loaded render synchronously, so SSR and prerendered HTML include them inline.
+const loaded = new Map<string, MDXContent>()
+const lazyBodies = new Map<string, LazyExoticComponent<MDXContent>>()
 
 function moduleLoader(filePath: string) {
 	const load = modules[`/content/posts/${filePath}`]
@@ -14,17 +16,20 @@ function moduleLoader(filePath: string) {
 	return load
 }
 
-/** Starts loading a post body so rendering doesn't wait for the chunk. */
-export function preloadPostBody(filePath: string) {
-	return moduleLoader(filePath)()
+/** Loads a post body so the first render can use it without suspending. */
+export async function preloadPostBody(filePath: string) {
+	const module = await moduleLoader(filePath)()
+	loaded.set(filePath, module.default)
 }
 
-/** A stable lazy component per post, safe to call during render. */
-export function getPostBody(filePath: string) {
-	let body = bodies.get(filePath)
-	if (!body) {
-		body = lazy(moduleLoader(filePath))
-		bodies.set(filePath, body)
+/** A stable component per post, safe to call during render; lazy only if not preloaded. */
+export function getPostBody(filePath: string): MDXContent | LazyExoticComponent<MDXContent> {
+	const body = loaded.get(filePath)
+	if (body) return body
+	let lazyBody = lazyBodies.get(filePath)
+	if (!lazyBody) {
+		lazyBody = lazy(moduleLoader(filePath))
+		lazyBodies.set(filePath, lazyBody)
 	}
-	return body
+	return lazyBody
 }
