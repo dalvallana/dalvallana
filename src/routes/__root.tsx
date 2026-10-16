@@ -1,14 +1,17 @@
 import type { QueryClient } from '@tanstack/react-query'
-import { createRootRouteWithContext, HeadContent, Scripts } from '@tanstack/react-router'
+import { createRootRouteWithContext, HeadContent, ScriptOnce, Scripts } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 
 import { siteName } from '@/lib/site'
+import { themeScript } from '@/lib/theme'
+import { getTheme } from '@/lib/theme-env'
 
 import appCss from '@/styles/app.css?url'
 
 type RouterContext = { queryClient: QueryClient }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
+	beforeLoad: () => ({ theme: getTheme() }),
 	head: () => ({
 		meta: [
 			{ charSet: 'utf-8' },
@@ -21,9 +24,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 })
 
 function RootDocument({ children }: { children: ReactNode }) {
+	const { theme } = Route.useRouteContext()
 	return (
-		<html lang="en">
+		// The inline script may change data-theme before hydration on prerendered pages.
+		<html lang="en" data-theme={theme} suppressHydrationWarning>
 			<head>
+				<ScriptOnce>{themeScript}</ScriptOnce>
 				<HeadContent />
 			</head>
 			<body>
