@@ -33,7 +33,7 @@ Each departure comes from API research. Task 15 updates the spec to match.
 ## Prerequisites (user)
 
 - **The project uses the public npm registry.** `bunfig.toml` pins `registry.npmjs.org`, overriding the user-level `.npmrc` for this repo.
-- **The user installs all dependencies up front.** The agent sandbox can't reach package registries. Every **Install** step in this plan is therefore *verify only*: run `bun pm ls 2>/dev/null | grep -E '<pkg>'` for the listed packages. If one is missing, stop and ask the user to install it; never try `bun add` yourself.
+- **The user installs all dependencies up front.** The agent sandbox can't reach package registries. Every **Install** step in this plan is therefore _verify only_: run `bun pm ls 2>/dev/null | grep -E '<pkg>'` for the listed packages. If one is missing, stop and ask the user to install it; never try `bun add` yourself.
 - **Network-only commands are run by the user.** These are `bunx playwright install chromium` (done up front) and `bunx shadcn add button` (Task 5; the agent pauses and asks).
 - **Lefthook's postinstall may already have installed a git hook.** If `.git/hooks/pre-commit` exists before Task 3, run `bunx lefthook uninstall` during Task 1. Task 3 installs it properly.
 
@@ -96,6 +96,7 @@ Tests sit next to the code they test: `*.test.ts` runs in Node, `*.test.tsx` run
 ### Task 1: Project skeleton
 
 **Files:**
+
 - Create: `.gitignore`, `.nvmrc`, `package.json`, `tsconfig.json`, `vite.config.ts`, `src/router.tsx`, `src/routes/__root.tsx`, `src/routes/{-$locale}/index.tsx`, `src/lib/site.ts`
 
 > Steps 1–3 are already done: `.nvmrc`, `.gitignore`, `package.json` and `bunfig.toml` exist. Check that they match the plan and move on.
@@ -224,6 +225,7 @@ export const siteName = 'dalvallana'
 import { QueryClient } from '@tanstack/react-query'
 import { createRouter } from '@tanstack/react-router'
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query'
+
 import { routeTree } from './routeTree.gen'
 
 export function getRouter() {
@@ -254,6 +256,7 @@ declare module '@tanstack/react-router' {
 import type { QueryClient } from '@tanstack/react-query'
 import { createRootRouteWithContext, HeadContent, Scripts } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
+
 import { siteName } from '@/lib/site'
 
 type RouterContext = { queryClient: QueryClient }
@@ -288,6 +291,7 @@ function RootDocument({ children }: { children: ReactNode }) {
 
 ```tsx
 import { createFileRoute } from '@tanstack/react-router'
+
 import { siteName } from '@/lib/site'
 
 export const Route = createFileRoute('/{-$locale}/')({ component: Home })
@@ -331,6 +335,7 @@ git commit -m "Scaffold TanStack Start app with Router and Query"
 ### Task 2: Formatter and linter (Oxfmt, Oxlint)
 
 **Files:**
+
 - Create: `.oxfmtrc.json`, `.oxlintrc.json`
 - Modify: `package.json` (scripts)
 
@@ -424,8 +429,21 @@ This is the Biome mapping from the spec. ESLint core rules are written without a
 				"no-restricted-imports": [
 					"error",
 					{
-						"paths": ["fs", "fs/promises", "path", "os", "child_process", "crypto", "process", "url", "buffer", "stream"],
-						"patterns": [{ "group": ["node:*"], "message": "App code must not use Node built-ins (Cloudflare Workers target)." }]
+						"paths": [
+							"fs",
+							"fs/promises",
+							"path",
+							"os",
+							"child_process",
+							"crypto",
+							"process",
+							"url",
+							"buffer",
+							"stream"
+						],
+						"patterns": [
+							{ "group": ["node:*"], "message": "App code must not use Node built-ins (Cloudflare Workers target)." }
+						]
 					}
 				]
 			}
@@ -484,6 +502,7 @@ git commit -m "Add Oxfmt and Oxlint configured from Biome rules"
 ### Task 3: Type-check script and Lefthook
 
 **Files:**
+
 - Create: `lefthook.yml`
 - Modify: `package.json` (scripts)
 
@@ -552,6 +571,7 @@ git commit -m "Add Lefthook pre-commit with format, lint and typecheck"
 ### Task 4: Vitest (unit + browser) and the locale helpers
 
 **Files:**
+
 - Create: `vitest.config.ts`, `src/lib/i18n.ts`
 - Test: `src/lib/i18n.test.ts`
 - Modify: `package.json` (scripts)
@@ -602,6 +622,7 @@ Add `"test": "vitest run"` and `"test:watch": "vitest"`.
 
 ```ts
 import { describe, expect, it } from 'vitest'
+
 import { defaultLocale, isLocale, localeParam, parseLocale } from '@/lib/i18n'
 
 describe('parseLocale', () => {
@@ -685,6 +706,7 @@ git commit -m "Add Vitest unit and browser projects with locale helpers"
 ### Task 5: Tailwind v4, design tokens and shadcn (React Aria)
 
 **Files:**
+
 - Create: `src/styles/app.css`, `components.json`, `src/lib/utils.ts`, `src/components/ui/button.tsx` (generated)
 - Modify: `vite.config.ts`, `src/routes/__root.tsx`, `.oxfmtrc.json`
 
@@ -875,6 +897,7 @@ git commit -m "Add Tailwind v4 tokens and shadcn React Aria button"
 ### Task 6: Theme (pure logic, toggle, root integration)
 
 **Files:**
+
 - Create: `src/lib/theme.ts`, `src/lib/theme-env.ts`, `src/components/theme-toggle.tsx`, `src/components/theme-switcher.tsx`
 - Test: `src/lib/theme.test.ts`, `src/components/theme-toggle.test.tsx`
 - Modify: `src/routes/__root.tsx`
@@ -883,6 +906,7 @@ git commit -m "Add Tailwind v4 tokens and shadcn React Aria button"
 
 ```ts
 import { describe, expect, it } from 'vitest'
+
 import { nextTheme, parseTheme, readThemeCookie } from '@/lib/theme'
 
 describe('parseTheme', () => {
@@ -970,6 +994,7 @@ Expected: PASS, 6 tests.
 ```ts
 import { createIsomorphicFn } from '@tanstack/react-start'
 import { getCookie } from '@tanstack/react-start/server'
+
 import { parseTheme, readThemeCookie, type Theme, themeCookieName } from '@/lib/theme'
 
 /** The visitor's theme: from the request cookie on the server, from `document.cookie` in the browser. */
@@ -989,6 +1014,7 @@ export function persistTheme(theme: Theme) {
 ```tsx
 import { expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
+
 import { ThemeToggle } from '@/components/theme-toggle'
 
 test('cycles through themes and reports each choice', async () => {
@@ -1015,6 +1041,7 @@ Expected: FAIL because `@/components/theme-toggle` can't be resolved.
 
 ```tsx
 import { useState } from 'react'
+
 import { Button } from '@/components/ui/button'
 import { nextTheme, type Theme } from '@/lib/theme'
 
@@ -1048,6 +1075,7 @@ This is kept apart from `theme-toggle.tsx` so the browser test never imports the
 
 ```tsx
 import { ClientOnly } from '@tanstack/react-router'
+
 import { ThemeToggle } from '@/components/theme-toggle'
 import { getTheme, persistTheme } from '@/lib/theme-env'
 
@@ -1080,9 +1108,11 @@ This replaces the whole file.
 import type { QueryClient } from '@tanstack/react-query'
 import { createRootRouteWithContext, HeadContent, ScriptOnce, Scripts } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
+
 import { siteName } from '@/lib/site'
 import { themeScript } from '@/lib/theme'
 import { getTheme } from '@/lib/theme-env'
+
 import appCss from '@/styles/app.css?url'
 
 type RouterContext = { queryClient: QueryClient }
@@ -1141,6 +1171,7 @@ git commit -m "Add light, dark and system themes with cookie persistence"
 ### Task 7: Locale layout, home page, header, error and 404 pages
 
 **Files:**
+
 - Create: `src/lib/messages.ts`, `src/routes/{-$locale}/route.tsx`, `src/components/site-header.tsx`, `src/components/error-page.tsx`, `src/components/not-found-page.tsx`
 - Modify: `src/routes/{-$locale}/index.tsx`, `src/routes/__root.tsx`
 
@@ -1186,6 +1217,7 @@ export const messages: Record<Locale, Messages> = {
 
 ```tsx
 import { Link } from '@tanstack/react-router'
+
 import { ThemeSwitcher } from '@/components/theme-switcher'
 import { type Locale, localeParam } from '@/lib/i18n'
 import { messages } from '@/lib/messages'
@@ -1213,6 +1245,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
 
 ```tsx
 import { createFileRoute, notFound, Outlet } from '@tanstack/react-router'
+
 import { SiteHeader } from '@/components/site-header'
 import { parseLocale } from '@/lib/i18n'
 
@@ -1243,6 +1276,7 @@ function LocaleLayout() {
 
 ```tsx
 import { createFileRoute, Link } from '@tanstack/react-router'
+
 import { localeParam } from '@/lib/i18n'
 import { messages } from '@/lib/messages'
 import { siteName } from '@/lib/site'
@@ -1285,6 +1319,7 @@ export function ErrorPage({ error }: ErrorComponentProps) {
 
 ```tsx
 import { Link, useParams } from '@tanstack/react-router'
+
 import { defaultLocale, localeParam, parseLocale } from '@/lib/i18n'
 import { messages } from '@/lib/messages'
 
@@ -1360,6 +1395,7 @@ git commit -m "Add locale layout, home page, header, error and 404 pages"
 ### Task 8: Post selection logic (pure)
 
 **Files:**
+
 - Create: `src/content/select.ts`
 - Test: `src/content/select.test.ts`
 
@@ -1367,6 +1403,7 @@ git commit -m "Add locale layout, home page, header, error and 404 pages"
 
 ```ts
 import { describe, expect, it } from 'vitest'
+
 import { type PostMeta, selectPost, selectPosts } from '@/content/select'
 
 function post(overrides: Partial<PostMeta>): PostMeta {
@@ -1494,6 +1531,7 @@ git commit -m "Add post selection with locale fallback and draft filtering"
 ### Task 9: Content pipeline (collection, sample posts, server functions, queries)
 
 **Files:**
+
 - Create: `content-collections.ts`, `content/posts/en/hello-world.mdx`, `content/posts/es/hello-world.mdx`, `content/posts/en/only-in-english.mdx`, `src/content/posts.ts`, `src/queries/posts.ts`
 - Modify: `vite.config.ts`
 
@@ -1508,6 +1546,7 @@ bun add -d @content-collections/core @content-collections/vite
 ```ts
 import { defineCollection, defineConfig } from '@content-collections/core'
 import { z } from 'zod'
+
 import { isLocale } from './src/lib/i18n'
 
 // Metadata only: MDX bodies are compiled by Vite (see src/content/mdx.ts), because
@@ -1624,6 +1663,7 @@ import { notFound } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { allPosts } from 'content-collections'
 import { z } from 'zod'
+
 import { selectPost, selectPosts } from '@/content/select'
 import { locales } from '@/lib/i18n'
 
@@ -1647,6 +1687,7 @@ export const getPost = createServerFn({ method: 'GET' })
 
 ```ts
 import { queryOptions } from '@tanstack/react-query'
+
 import { getPost, getPosts } from '@/content/posts'
 import type { Locale } from '@/lib/i18n'
 
@@ -1677,6 +1718,7 @@ git commit -m "Add posts collection, sample posts, server functions and queries"
 ### Task 10: MDX bodies and post components
 
 **Files:**
+
 - Create: `src/content/mdx.ts`, `src/components/mdx/callout.tsx`, `src/components/mdx/counter.tsx`, `src/components/mdx/mdx-components.tsx`, `src/components/mdx/fixture.mdx`
 - Test: `src/components/mdx/mdx-components.test.tsx`
 - Modify: `vite.config.ts`, `vitest.config.ts`, `tsconfig.json`
@@ -1751,6 +1793,7 @@ export default defineConfig({
 ```tsx
 import { expect, test } from 'vitest'
 import { render } from 'vitest-browser-react'
+
 import Fixture from '@/components/mdx/fixture.mdx'
 import { mdxComponents } from '@/components/mdx/mdx-components'
 
@@ -1786,6 +1829,7 @@ export function Callout({ children }: { children: ReactNode }) {
 
 ```tsx
 import { useState } from 'react'
+
 import { Button } from '@/components/ui/button'
 
 export function Counter() {
@@ -1805,6 +1849,7 @@ export function Counter() {
 
 ```tsx
 import type { MDXComponents } from 'mdx/types'
+
 import { Callout } from '@/components/mdx/callout'
 import { Counter } from '@/components/mdx/counter'
 
@@ -1863,6 +1908,7 @@ git commit -m "Compile MDX with Vite and add shared post components"
 ### Task 11: Posts list and post page
 
 **Files:**
+
 - Create: `src/routes/{-$locale}/posts/index.tsx`, `src/routes/{-$locale}/posts/$slug.tsx`
 
 - [ ] **Step 1: Create `src/routes/{-$locale}/posts/index.tsx`**
@@ -1870,6 +1916,7 @@ git commit -m "Compile MDX with Vite and add shared post components"
 ```tsx
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
+
 import { localeParam } from '@/lib/i18n'
 import { messages } from '@/lib/messages'
 import { postsQueryOptions } from '@/queries/posts'
@@ -1912,6 +1959,7 @@ function PostsPage() {
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { Suspense } from 'react'
+
 import { mdxComponents } from '@/components/mdx/mdx-components'
 import { getPostBody, preloadPostBody } from '@/content/mdx'
 import { messages } from '@/lib/messages'
@@ -1989,6 +2037,7 @@ git commit -m "Add posts list and post page with lazy MDX bodies"
 ### Task 12: Prerendering
 
 **Files:**
+
 - Modify: `vite.config.ts`
 
 - [ ] **Step 1: Turn on prerendering in `vite.config.ts`**
@@ -2039,6 +2088,7 @@ git commit -m "Prerender static pages by crawling from locale roots"
 ### Task 13: End-to-end and accessibility tests
 
 **Files:**
+
 - Create: `playwright.config.ts`, `e2e/site.spec.ts`, `e2e/a11y.spec.ts`
 - Modify: `package.json` (scripts)
 
@@ -2166,6 +2216,7 @@ Run: `bun run test:e2e`
 Expected: all tests PASS (5 site tests + 12 accessibility tests).
 
 How to handle failures:
+
 - **axe reports `color-contrast`:** adjust the matching token in `src/styles/app.css`. Don't relax the test.
 - **The 404 heading test fails:** check that `NotFoundPage` renders for loader-thrown `notFound()` under `/posts/…`.
 
@@ -2175,7 +2226,7 @@ Run: `bun run lint`
 Expected: exits 0. If Vitest-plugin rules misfire on Playwright specs (e.g., `vitest/expect-expect` or `vitest/valid-title`), add this override to `.oxlintrc.json` with only the rules that fired:
 
 ```json
-		{ "files": ["e2e/**"], "rules": { "vitest/expect-expect": "off" } }
+{ "files": ["e2e/**"], "rules": { "vitest/expect-expect": "off" } }
 ```
 
 - [ ] **Step 8: Commit**
@@ -2190,6 +2241,7 @@ git commit -m "Add Playwright e2e and axe accessibility tests"
 ### Task 14: CI and Dependabot
 
 **Files:**
+
 - Create: `.github/workflows/test.yml`, `.github/dependabot.yml`
 
 - [ ] **Step 1: Create `.github/workflows/test.yml`**
@@ -2263,6 +2315,7 @@ git commit -m "Add CI test workflow and Dependabot"
 ### Task 15: Final verification and spec sync
 
 **Files:**
+
 - Modify: `docs/superpowers/specs/2026-10-16-blog-scaffold-design.md`
 
 - [ ] **Step 1: Run every check from a clean state**

@@ -30,21 +30,21 @@ Visual design, CMS or database, i18n library for UI strings, analytics, error mo
 
 ## Stack and runtime
 
-| Concern | Choice |
-|---|---|
-| Package manager / script runner | Bun (`packageManager` pinned in `package.json`) |
-| Runtime (dev, test, build) | Node LTS (pinned in `.nvmrc`) |
-| Framework | TanStack Start, Router, Query |
-| Content | content-collections (frontmatter) + `@mdx-js/rollup` (MDX bodies) |
-| UI | shadcn (React Aria base: `react-aria-components`), Tailwind v4, `@tailwindcss/typography` |
-| Validation | Zod 4 |
-| Types | TypeScript 7 (`tsgo`; `@typescript/native-preview` if 7.0 stable is not out) |
-| Unit/component tests | Vitest browser mode, Playwright provider, `vitest-browser-react` |
-| E2E | Playwright, `@axe-core/playwright` |
-| Lint / format | Oxlint (type-aware), Oxfmt |
-| Git hooks | Lefthook |
-| CI | GitHub Actions (tests only) |
-| Dependency updates | Dependabot |
+| Concern                         | Choice                                                                                    |
+| ------------------------------- | ----------------------------------------------------------------------------------------- |
+| Package manager / script runner | Bun (`packageManager` pinned in `package.json`)                                           |
+| Runtime (dev, test, build)      | Node LTS (pinned in `.nvmrc`)                                                             |
+| Framework                       | TanStack Start, Router, Query                                                             |
+| Content                         | content-collections (frontmatter) + `@mdx-js/rollup` (MDX bodies)                         |
+| UI                              | shadcn (React Aria base: `react-aria-components`), Tailwind v4, `@tailwindcss/typography` |
+| Validation                      | Zod 4                                                                                     |
+| Types                           | TypeScript 7 (`tsgo`; `@typescript/native-preview` if 7.0 stable is not out)              |
+| Unit/component tests            | Vitest browser mode, Playwright provider, `vitest-browser-react`                          |
+| E2E                             | Playwright, `@axe-core/playwright`                                                        |
+| Lint / format                   | Oxlint (type-aware), Oxfmt                                                                |
+| Git hooks                       | Lefthook                                                                                  |
+| CI                              | GitHub Actions (tests only)                                                               |
+| Dependency updates              | Dependabot                                                                                |
 
 **Rule: no runtime-only Node APIs in app code.** Cloudflare Workers is a likely deploy target. App code must not use `fs`, `path` or similar at request time. Build-time tooling (Vite plugins, content-collections config) may use them.
 
@@ -138,14 +138,14 @@ tsconfig.json
 
 ## Error handling
 
-| Case | Behavior |
-|---|---|
-| Unknown locale or slug | `throw notFound()`, real 404 status from SSR |
-| Post missing in `es` but present in `en` | English post plus a notice |
-| Any route error | Root `errorComponent`: plain message, details only in dev |
-| Not found | Root `notFoundComponent`: 404 page with a link home |
-| Invalid frontmatter | Build/dev failure via content-collections validation |
-| Invalid env | `src/env.ts` throws at server start |
+| Case                                     | Behavior                                                  |
+| ---------------------------------------- | --------------------------------------------------------- |
+| Unknown locale or slug                   | `throw notFound()`, real 404 status from SSR              |
+| Post missing in `es` but present in `en` | English post plus a notice                                |
+| Any route error                          | Root `errorComponent`: plain message, details only in dev |
+| Not found                                | Root `notFoundComponent`: 404 page with a link home       |
+| Invalid frontmatter                      | Build/dev failure via content-collections validation      |
+| Invalid env                              | `src/env.ts` throws at server start                       |
 
 ## TypeScript
 
@@ -160,7 +160,7 @@ This is the user's tsconfig with three agreed additions, marked `// added`:
 		"module": "ESNext",
 		"paths": {
 			"@/*": ["./src/*"],
-			"content-collections": ["./.content-collections/generated"] // added
+			"content-collections": ["./.content-collections/generated"], // added
 		},
 		"lib": ["ES2022", "DOM", "DOM.Iterable"],
 		"types": ["vite/client", "mdx"], // added "mdx" (needs @types/mdx)
@@ -178,8 +178,8 @@ This is the user's tsconfig with three agreed additions, marked `// added`:
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true,
 		"noUncheckedSideEffectImports": true,
-		"erasableSyntaxOnly": true // added, replaces Biome noEnum
-	}
+		"erasableSyntaxOnly": true, // added, replaces Biome noEnum
+	},
 }
 ```
 
@@ -208,70 +208,70 @@ Vitest browser-mode types (`expect.element`, Playwright provider) are referenced
 
 Severity is `error` unless noted.
 
-| Biome | Oxlint |
-|---|---|
+| Biome                                           | Oxlint                                                 |
+| ----------------------------------------------- | ------------------------------------------------------ |
 | a11y/noNoninteractiveElementInteractions (warn) | jsx-a11y/no-noninteractive-element-interactions (warn) |
-| complexity/noUselessCatchBinding | unicorn/prefer-optional-catch-binding |
-| complexity/noUselessStringConcat | eslint/no-useless-concat |
-| complexity/noUselessUndefined | unicorn/no-useless-undefined |
-| nursery/noShadow | eslint/no-shadow |
-| nursery/noUnnecessaryConditions | typescript/no-unnecessary-condition (TA) |
-| performance/noAwaitInLoops | eslint/no-await-in-loop |
-| performance/noBarrelFile | oxc/no-barrel-file |
-| style/noInferrableTypes | typescript/no-inferrable-types |
-| style/noNegationElse | eslint/no-negated-condition |
-| style/noNestedTernary | eslint/no-nested-ternary |
-| style/noParameterAssign | eslint/no-param-reassign |
-| style/noSubstr | unicorn/prefer-string-slice |
-| style/noUselessElse | eslint/no-else-return |
-| style/noYodaExpression | eslint/yoda |
-| style/useAsConstAssertion | typescript/prefer-as-const |
-| style/useCollapsedElseIf | eslint/no-lonely-if |
-| style/useCollapsedIf | unicorn/no-lonely-if |
-| style/useConsistentArrayType | typescript/array-type (`default: "array"`) |
-| style/useConsistentArrowReturn | eslint/arrow-body-style |
-| style/useConsistentBuiltinInstantiation | unicorn/new-for-builtins |
-| style/useConsistentCurlyBraces | react/jsx-curly-brace-presence |
-| style/useConsistentObjectDefinitions | eslint/object-shorthand |
-| style/useConsistentTypeDefinitions (`type`) | typescript/consistent-type-definitions (`"type"`) |
-| style/useDefaultParameterLast | eslint/default-param-last |
-| style/useDefaultSwitchClause | eslint/default-case |
-| style/useExplicitLengthCheck | unicorn/explicit-length-check |
-| style/useFragmentSyntax | react/jsx-fragments |
-| style/useGroupedAccessorPairs | eslint/grouped-accessor-pairs |
-| style/useNumericSeparators | unicorn/numeric-separators-style |
-| style/useObjectSpread | eslint/prefer-object-spread |
-| style/useSelfClosingElements | react/self-closing-comp |
-| style/useSingleVarDeclarator | eslint/one-var (`"never"`) |
-| style/useSymbolDescription | eslint/symbol-description |
-| style/useTrimStartEnd | unicorn/prefer-string-trim-start-end |
-| suspicious/noAlert (warn) | eslint/no-alert (warn) |
-| suspicious/noConsole (warn) | eslint/no-console (warn) |
-| suspicious/noConstantBinaryExpressions | eslint/no-constant-binary-expression |
-| suspicious/noDeprecatedImports (warn) | typescript/no-deprecated (warn, TA) |
-| suspicious/noDuplicateTestHooks | vitest/no-duplicate-hooks |
-| suspicious/noEmptySource | unicorn/no-empty-file |
-| suspicious/noExplicitAny | typescript/no-explicit-any |
-| suspicious/noImportCycles | import/no-cycle |
-| suspicious/noUnassignedVariables | eslint/no-unassigned-vars |
-| suspicious/noUnusedExpressions | eslint/no-unused-expressions |
-| suspicious/noVar | eslint/no-var |
-| suspicious/useAwait (warn) | eslint/require-await (warn) |
+| complexity/noUselessCatchBinding                | unicorn/prefer-optional-catch-binding                  |
+| complexity/noUselessStringConcat                | eslint/no-useless-concat                               |
+| complexity/noUselessUndefined                   | unicorn/no-useless-undefined                           |
+| nursery/noShadow                                | eslint/no-shadow                                       |
+| nursery/noUnnecessaryConditions                 | typescript/no-unnecessary-condition (TA)               |
+| performance/noAwaitInLoops                      | eslint/no-await-in-loop                                |
+| performance/noBarrelFile                        | oxc/no-barrel-file                                     |
+| style/noInferrableTypes                         | typescript/no-inferrable-types                         |
+| style/noNegationElse                            | eslint/no-negated-condition                            |
+| style/noNestedTernary                           | eslint/no-nested-ternary                               |
+| style/noParameterAssign                         | eslint/no-param-reassign                               |
+| style/noSubstr                                  | unicorn/prefer-string-slice                            |
+| style/noUselessElse                             | eslint/no-else-return                                  |
+| style/noYodaExpression                          | eslint/yoda                                            |
+| style/useAsConstAssertion                       | typescript/prefer-as-const                             |
+| style/useCollapsedElseIf                        | eslint/no-lonely-if                                    |
+| style/useCollapsedIf                            | unicorn/no-lonely-if                                   |
+| style/useConsistentArrayType                    | typescript/array-type (`default: "array"`)             |
+| style/useConsistentArrowReturn                  | eslint/arrow-body-style                                |
+| style/useConsistentBuiltinInstantiation         | unicorn/new-for-builtins                               |
+| style/useConsistentCurlyBraces                  | react/jsx-curly-brace-presence                         |
+| style/useConsistentObjectDefinitions            | eslint/object-shorthand                                |
+| style/useConsistentTypeDefinitions (`type`)     | typescript/consistent-type-definitions (`"type"`)      |
+| style/useDefaultParameterLast                   | eslint/default-param-last                              |
+| style/useDefaultSwitchClause                    | eslint/default-case                                    |
+| style/useExplicitLengthCheck                    | unicorn/explicit-length-check                          |
+| style/useFragmentSyntax                         | react/jsx-fragments                                    |
+| style/useGroupedAccessorPairs                   | eslint/grouped-accessor-pairs                          |
+| style/useNumericSeparators                      | unicorn/numeric-separators-style                       |
+| style/useObjectSpread                           | eslint/prefer-object-spread                            |
+| style/useSelfClosingElements                    | react/self-closing-comp                                |
+| style/useSingleVarDeclarator                    | eslint/one-var (`"never"`)                             |
+| style/useSymbolDescription                      | eslint/symbol-description                              |
+| style/useTrimStartEnd                           | unicorn/prefer-string-trim-start-end                   |
+| suspicious/noAlert (warn)                       | eslint/no-alert (warn)                                 |
+| suspicious/noConsole (warn)                     | eslint/no-console (warn)                               |
+| suspicious/noConstantBinaryExpressions          | eslint/no-constant-binary-expression                   |
+| suspicious/noDeprecatedImports (warn)           | typescript/no-deprecated (warn, TA)                    |
+| suspicious/noDuplicateTestHooks                 | vitest/no-duplicate-hooks                              |
+| suspicious/noEmptySource                        | unicorn/no-empty-file                                  |
+| suspicious/noExplicitAny                        | typescript/no-explicit-any                             |
+| suspicious/noImportCycles                       | import/no-cycle                                        |
+| suspicious/noUnassignedVariables                | eslint/no-unassigned-vars                              |
+| suspicious/noUnusedExpressions                  | eslint/no-unused-expressions                           |
+| suspicious/noVar                                | eslint/no-var                                          |
+| suspicious/useAwait (warn)                      | eslint/require-await (warn)                            |
 
 ### Not mapped directly (accepted)
 
-| Biome | Handling |
-|---|---|
-| style/noEnum | `erasableSyntaxOnly` in tsconfig |
-| correctness/noUndeclaredVariables | Covered by tsgo; `no-undef` not enabled |
-| performance/noDelete | Partial: typescript/no-dynamic-delete |
-| performance/noReExportAll | Partial: oxc/no-barrel-file |
-| style/noUnusedTemplateLiteral | Not covered |
-| correctness/noUndeclaredDependencies | Not covered (Knip later) |
-| correctness/noReactPropAssignments | Not covered |
-| correctness/useUniqueElementIds | Not covered |
-| nursery/useSortedClasses | Oxfmt `sortTailwindcss` |
-| `javascript.globals: ["vi"]` | Dropped; Vitest APIs are imported explicitly |
+| Biome                                | Handling                                     |
+| ------------------------------------ | -------------------------------------------- |
+| style/noEnum                         | `erasableSyntaxOnly` in tsconfig             |
+| correctness/noUndeclaredVariables    | Covered by tsgo; `no-undef` not enabled      |
+| performance/noDelete                 | Partial: typescript/no-dynamic-delete        |
+| performance/noReExportAll            | Partial: oxc/no-barrel-file                  |
+| style/noUnusedTemplateLiteral        | Not covered                                  |
+| correctness/noUndeclaredDependencies | Not covered (Knip later)                     |
+| correctness/noReactPropAssignments   | Not covered                                  |
+| correctness/useUniqueElementIds      | Not covered                                  |
+| nursery/useSortedClasses             | Oxfmt `sortTailwindcss`                      |
+| `javascript.globals: ["vi"]`         | Dropped; Vitest APIs are imported explicitly |
 
 ## Testing
 
