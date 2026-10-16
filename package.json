@@ -9,6 +9,8 @@
 		"format": "oxfmt",
 		"format:check": "oxfmt --check",
 		"build": "vite build",
+		"test": "vitest run",
+		"test:watch": "vitest",
 		"preview": "srvx --prod --port 4173 -s ../client dist/server/server.js"
 	},
 	"dependencies": {
