@@ -7,7 +7,7 @@ const themes = ['light', 'dark'] as const
 for (const theme of themes) {
 	for (const path of paths) {
 		test(`${path} has no serious accessibility violations in ${theme} mode`, async ({ page, context, baseURL }) => {
-			await context.addCookies([{ name: 'theme', value: theme, url: baseURL ?? 'http://localhost:4173' }])
+			await context.addCookies([{ name: 'theme', value: theme, url: baseURL ?? 'http://127.0.0.1:4173' }])
 			await page.goto(path)
 
 			const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze()

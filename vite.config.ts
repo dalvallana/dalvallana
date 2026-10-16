@@ -10,6 +10,9 @@ import { excludeDrafts } from './vite/exclude-drafts.ts'
 
 export default defineConfig({
 	server: { port: 3000 },
+	// Prerendering fetches from Vite's preview server; an explicit IPv4 host avoids `localhost`
+	// resolving to `::1` while the server listens elsewhere (seen on GitHub's Ubuntu runners).
+	preview: { host: '127.0.0.1' },
 	resolve: { tsconfigPaths: true },
 	plugins: [
 		// Must precede the MDX plugin (same `pre` level, so array order decides).

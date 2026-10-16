@@ -73,5 +73,5 @@ test('default-locale prefixed URLs redirect to unprefixed ones', async ({ page }
 
 	const response = await page.request.get('/en', { maxRedirects: 0 })
 	expect(response.status()).toBe(301)
-	expect(response.headers().location).toMatch(/^(?:http:\/\/localhost:4173)?\/$/)
+	expect(response.headers().location).toMatch(/^(?:http:\/\/127\.0\.0\.1:4173)?\/$/)
 })
