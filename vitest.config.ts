@@ -1,9 +1,14 @@
+import mdx from '@mdx-js/rollup'
 import viteReact from '@vitejs/plugin-react'
 import { playwright } from '@vitest/browser-playwright'
+import remarkFrontmatter from 'remark-frontmatter'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-	plugins: [viteReact()],
+	plugins: [
+		{ enforce: 'pre', ...mdx({ remarkPlugins: [remarkFrontmatter] }) },
+		viteReact({ include: /\.(mdx|js|jsx|ts|tsx)$/ }),
+	],
 	resolve: { tsconfigPaths: true },
 	test: {
 		projects: [
