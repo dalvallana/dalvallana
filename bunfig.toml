@@ -1,3 +1,6 @@
 [install]
 # Use the public registry for this project, regardless of user-level .npmrc.
 registry = "https://registry.npmjs.org/"
+# Only resolve versions published at least 3 days ago (in seconds), so compromised or
+# broken releases have time to be caught and pulled before they can be installed.
+minimumReleaseAge = 259200
