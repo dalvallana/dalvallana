@@ -16,19 +16,19 @@ function PostsPage() {
 	const { locale } = Route.useRouteContext()
 	const { data: posts } = useSuspenseQuery(postsQueryOptions(locale))
 	return (
-		<section>
+		<section className="flex flex-col gap-8">
 			<h1 className="text-3xl font-semibold tracking-tight">{messages[locale].posts}</h1>
-			<ul className="mt-8 space-y-6">
+			<ul className="flex flex-col gap-6">
 				{posts.map((post) => (
-					<li key={post.slug}>
+					<li key={post.slug} className="flex flex-col gap-1">
 						<Link
 							to="/{-$locale}/posts/$slug"
 							params={{ locale: localeParam(locale), slug: post.slug }}
-							className="text-lg font-medium hover:underline"
+							className="self-start text-lg font-medium hover:underline"
 						>
 							{post.title}
 						</Link>
-						<p className="mt-1 text-sm text-muted-foreground">{post.description}</p>
+						<p className="text-sm text-muted-foreground">{post.description}</p>
 					</li>
 				))}
 			</ul>

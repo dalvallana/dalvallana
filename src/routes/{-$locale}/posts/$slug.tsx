@@ -28,15 +28,15 @@ function PostPage() {
 	const Body = getPostBody(post.filePath)
 
 	return (
-		<article lang={fallback ? post.locale : undefined}>
+		<article lang={fallback ? post.locale : undefined} className="flex flex-col gap-8">
 			{fallback ? (
-				<p role="note" lang={locale} className="mb-8 rounded-md border px-4 py-3 text-sm text-muted-foreground">
+				<p role="note" lang={locale} className="rounded-md border px-4 py-3 text-sm text-muted-foreground">
 					{messages[locale].fallbackNotice}
 				</p>
 			) : null}
-			<header className="mb-8">
+			<header className="flex flex-col gap-2">
 				<h1 className="text-3xl font-semibold tracking-tight">{post.title}</h1>
-				<time dateTime={post.date} className="mt-2 block text-sm text-muted-foreground">
+				<time dateTime={post.date} className="text-sm text-muted-foreground">
 					{post.date}
 				</time>
 			</header>

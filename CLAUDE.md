@@ -76,6 +76,7 @@ bunx playwright test e2e/site.spec.ts -g '404'
 ## Conventions and lint quirks
 
 - Formatting: tabs, single quotes, no semicolons, 120 columns. Imports and Tailwind classes are sorted by Oxfmt.
+- Spacing: no margins between elements (`mt-*`, `mb-*`, `space-y-*`, ...). Make the parent a flex container and use `gap-*`; group siblings in a wrapper when they need different gaps. Prefer flex; use grid only for genuinely two-dimensional or more customized layouts. Two exceptions remain: `mx-auto` to center a column, and vertical margins on MDX components, which sit in `prose` flow that is spaced with margins.
 - The Oxlint config is a migration of the user's Biome rules; fix code rather than disabling rules. Rules that commonly bite:
   - `unicorn/no-useless-undefined`: no explicit `undefined` arguments; use optional params or `null` in tests.
   - `unicorn/no-array-sort`: use `toSorted` (which is why tsconfig `lib` is ES2023).
