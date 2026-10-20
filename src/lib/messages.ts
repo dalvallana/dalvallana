@@ -2,8 +2,7 @@ import type { Locale } from '@/lib/i18n'
 
 type Messages = {
 	heroGreeting: string
-	heroDay: string
-	heroNight: string
+	heroClaim: string
 	recentPosts: string
 	posts: string
 	allPosts: string
@@ -17,8 +16,7 @@ type Messages = {
 export const messages: Record<Locale, Messages> = {
 	en: {
 		heroGreeting: 'Hi, I’m Diego',
-		heroDay: 'Software engineer by day,',
-		heroNight: 'animal liberation advocate by night.',
+		heroClaim: 'Software engineer and animal liberation activist in Madrid',
 		recentPosts: 'Recent writing',
 		posts: 'Posts',
 		allPosts: 'Read all posts',
@@ -29,8 +27,7 @@ export const messages: Record<Locale, Messages> = {
 	},
 	es: {
 		heroGreeting: 'Hola, soy Diego',
-		heroDay: 'Ingeniero de software de día,',
-		heroNight: 'activista por la liberación animal de noche.',
+		heroClaim: 'Ingeniero de software y activista por la liberación animal en Madrid',
 		recentPosts: 'Artículos recientes',
 		posts: 'Artículos',
 		allPosts: 'Ver todos los artículos',

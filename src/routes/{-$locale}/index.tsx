@@ -46,11 +46,7 @@ function Hero({ locale }: { locale: Locale }) {
 			</div>
 			<div className="max-w-3xl text-center">
 				<p className="text-sm font-medium tracking-[0.3em] text-highlight uppercase">{t.heroGreeting}</p>
-				<h1 className="mt-6 text-4xl leading-tight text-balance sm:text-6xl">
-					{t.heroDay}
-					<br />
-					<em>{t.heroNight}</em>
-				</h1>
+				<h1 className="mt-6 text-4xl leading-tight text-balance sm:text-6xl">{t.heroClaim}</h1>
 			</div>
 		</section>
 	)
