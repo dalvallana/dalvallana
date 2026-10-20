@@ -5,14 +5,74 @@ date: '2026-09-20'
 tags: [placeholder]
 ---
 
-This is placeholder text to fill the page while the design takes shape. It exists so the layout can be judged with realistic lengths: a few sentences per paragraph, a heading or two, and enough height to scroll past the fold.
+I used to think of static types as a tool for catching bugs. They do that, and it is valuable. But the longer I work on shared codebases, the more I think of types as something else: a form of kindness to the people who come after you, including your future self.
 
-## A first section
+## Types as documentation that cannot lie
 
-This is placeholder text to fill the page while the design takes shape. It exists so the layout can be judged with realistic lengths: a few sentences per paragraph, a heading or two, and enough height to scroll past the fold. Short paragraphs read better on screens, so this one stops here.
+Comments drift. READMEs go stale. Wiki pages describe a system that was refactored two years ago. Types are the one form of documentation that the compiler checks on every build, which means they cannot quietly fall out of date.
 
-This is placeholder text to fill the page while the design takes shape. It exists so the layout can be judged with realistic lengths: a few sentences per paragraph, a heading or two, and enough height to scroll past the fold.
+When I open an unfamiliar function and see its signature, I learn what it accepts, what it returns, and often what can go wrong. That is a lot of information delivered for free, before I read a single line of the implementation.
 
-## Another section
+Consider a function that loads a post:
 
-This is placeholder text to fill the page while the design takes shape. It exists so the layout can be judged with realistic lengths: a few sentences per paragraph, a heading or two, and enough height to scroll past the fold. A closing thought would go here.
+```ts
+type Post = {
+	slug: string
+	title: string
+	date: string
+	draft: boolean
+}
+
+type PostResult = { post: Post; fallback: boolean }
+
+async function getPost(locale: Locale, slug: string): Promise<PostResult> {
+	// ...
+}
+```
+
+Without reading the body, I know it is asynchronous, that it needs a locale and a slug, and that the result may be a fallback in another language. A comment could say all of that, but a comment would not stop me from forgetting to handle `fallback`.
+
+## Making invalid states unrepresentable
+
+The most useful type-level habit I have picked up is designing types so that impossible situations cannot be expressed at all. If a request can be loading, successful, or failed, a single object with optional `data` and `error` fields allows nonsense like having both at once. A discriminated union does not.
+
+This is kindness in a very concrete sense. The next person to touch the code does not have to wonder which combinations are possible. The compiler has already answered the question for them.
+
+### A small example
+
+Suppose a theme can be light, dark, or follow the system. Representing it as a string gives you no help when someone writes `"drak"`. Representing it as a union of three literals turns that typo into an immediate error, right in the editor, before any test runs.
+
+### The broader principle
+
+Every invariant you encode in a type is one less invariant someone has to remember. Memory is the scarcest resource on a team, and types are one of the few tools that let you offload it reliably.
+
+## The cost, honestly
+
+Types are not free. They add syntax, they can be confusing when they get clever, and they occasionally force you to convince the compiler of something you already know to be true.
+
+A few things help keep the cost down:
+
+- Prefer simple, named types over deeply nested inline ones.
+- Let inference do the work for local variables.
+- Avoid type-level gymnastics unless they remove real complexity elsewhere.
+- Treat `any` and unchecked casts as debt, and write down why each one exists.
+
+When types start to feel like a puzzle rather than a description, that is usually a sign the underlying design wants to be simpler.
+
+## Types and refactoring
+
+The moment types really pay for themselves is during a large change. Rename a field, change a return type, or split a module, and the compiler hands you a complete list of every place that needs attention. Without types, that list lives in grep results, test failures, and production incidents.
+
+> Refactoring without types is like moving house without a list of what is in each box. You will get there, but you will be finding things for months.
+
+This is where the kindness framing feels most accurate. A well-typed codebase lets someone who has never seen it make sweeping changes with confidence. A loosely typed one makes every change a negotiation with the unknown.
+
+## Validating the boundaries
+
+Types only describe what the compiler can see. Data arriving from the network, a file, or a form is not checked at compile time, so it is worth validating at the boundary and turning it into well-typed values as early as possible. Schema libraries make this pleasant: one definition gives you both a runtime check and a static type.
+
+Once data has crossed the boundary and been validated, the rest of the code can trust it. That trust is what makes the interior of a system calm.
+
+## A closing thought
+
+Writing good types takes a little more time up front. In exchange, the people who read your code later get clarity, safety, and the confidence to change things without fear. That seems like a fair trade, and a kind one.

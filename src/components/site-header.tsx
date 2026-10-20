@@ -9,15 +9,18 @@ import { siteName } from '@/lib/site'
 
 type SiteHeaderProps = {
 	locale: Locale
-	/** Floats over the home hero, whose veil keeps the theme's text colors legible on the photo. */
+	/** Floats over the home hero instead of taking space above the content. */
 	overlay?: boolean
 }
 
 export function SiteHeader({ locale, overlay = false }: SiteHeaderProps) {
 	const params = { locale: localeParam(locale) }
 	return (
-		<header className={cn(overlay && 'absolute inset-x-0 top-0 z-10')}>
-			<div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+		// Pinned on every page; sticky keeps the header's own space in the flow, so content needs no offset.
+		<header
+			className={cn('top-0 z-20 bg-background/10 shadow-md backdrop-blur-sm', overlay ? 'fixed inset-x-0' : 'sticky')}
+		>
+			<div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
 				<Link to="/{-$locale}" params={params} className="font-heading text-xl">
 					{siteName}
 				</Link>
