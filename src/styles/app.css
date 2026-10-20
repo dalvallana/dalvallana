@@ -1,6 +1,10 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
+@import '@fontsource-variable/eb-garamond';
+@import '@fontsource-variable/eb-garamond/wght-italic.css';
+@import '@fontsource-variable/work-sans';
+@import '@fontsource-variable/work-sans/wght-italic.css';
 @plugin '@tailwindcss/typography';
 
 @custom-variant dark {
@@ -56,9 +60,8 @@
 }
 
 @theme {
-	/* Placeholders until the final typefaces are chosen. */
-	--font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
-	--font-heading: ui-serif, Georgia, Cambria, 'Times New Roman', serif;
+	--font-sans: 'Work Sans Variable', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+	--font-heading: 'EB Garamond Variable', ui-serif, Georgia, Cambria, 'Times New Roman', serif;
 }
 
 @theme inline {
