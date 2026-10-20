@@ -26,7 +26,7 @@ function LocaleLayout() {
 	return (
 		<>
 			<SiteHeader locale={locale} overlay={isHome} />
-			<main className={isHome ? undefined : 'mx-auto max-w-2xl px-6 pt-6 pb-16'}>
+			<main className={isHome ? undefined : 'mx-auto max-w-3xl px-6 pt-6 pb-16'}>
 				<Outlet />
 			</main>
 		</>

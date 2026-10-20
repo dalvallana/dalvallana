@@ -35,12 +35,12 @@ function PostPage() {
 				</p>
 			) : null}
 			<header className="flex flex-col gap-2">
-				<h1 className="text-3xl font-semibold tracking-tight">{post.title}</h1>
+				<h1 className="text-5xl font-semibold tracking-tight">{post.title}</h1>
 				<time dateTime={post.date} className="text-sm text-muted-foreground">
 					{post.date}
 				</time>
 			</header>
-			<div className="prose prose-neutral dark:prose-invert">
+			<div className="prose prose-lg prose-neutral dark:prose-invert">
 				<Suspense fallback={null}>
 					{/* oxlint-disable-next-line react/static-components -- getPostBody returns a cached, stable component per post */}
 					<Body components={mdxComponents} />

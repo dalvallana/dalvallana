@@ -17,7 +17,7 @@ export function SiteHeader({ locale, overlay = false }: SiteHeaderProps) {
 	const params = { locale: localeParam(locale) }
 	return (
 		<header className={cn(overlay && 'absolute inset-x-0 top-0 z-10')}>
-			<div className={cn('mx-auto flex items-center justify-between px-6 py-6', overlay ? 'max-w-6xl' : 'max-w-2xl')}>
+			<div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
 				<Link to="/{-$locale}" params={params} className="font-heading text-xl">
 					{siteName}
 				</Link>
