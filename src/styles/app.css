@@ -21,14 +21,14 @@
 :root {
 	color-scheme: light dark;
 	--radius: 0.875rem;
-	/* Light is spring (cream, moss, ochre); dark is autumn (umber, gold, bronze). */
+	/* Light is cream with rust and ochre accents; dark is autumn (umber, gold, bronze). */
 	--background: light-dark(oklch(0.945 0.022 84), oklch(0.245 0.006 78.2));
 	--foreground: light-dark(oklch(0.283 0.014 101.4), oklch(0.962 0.007 80.7));
 	--card: light-dark(oklch(0.98 0.01 87.5), oklch(0.282 0.008 84.6));
 	--card-foreground: var(--foreground);
 	--popover: var(--card);
 	--popover-foreground: var(--foreground);
-	--primary: light-dark(oklch(0.511 0.08 132.2), oklch(0.789 0.084 78.1));
+	--primary: light-dark(oklch(0.52 0.16 40), oklch(0.789 0.084 78.1));
 	--primary-foreground: light-dark(oklch(0.98 0.01 87.5), oklch(0.245 0.006 78.2));
 	--secondary: light-dark(oklch(0.885 0.021 86), oklch(0.282 0.008 84.6));
 	--secondary-foreground: var(--foreground);
@@ -40,10 +40,11 @@
 	--border: light-dark(oklch(0.891 0.024 82.1), oklch(1 0 0 / 10%));
 	--input: light-dark(oklch(0.87 0.028 83.5), oklch(1 0 0 / 15%));
 	--ring: light-dark(oklch(0.517 0.069 77.9), oklch(0.633 0.087 76.9));
-	/* Eyebrow labels and decorative text: green in light, gold in dark (both AA on the background). */
-	--highlight: light-dark(oklch(0.49 0.13 135), oklch(0.789 0.084 78.1));
-	/* Hover state for highlight links: darker green in light, lighter gold in dark, so contrast only grows. */
-	--highlight-hover: light-dark(oklch(0.39 0.11 135), oklch(0.87 0.07 80));
+	/* Links and accents: rust in light, gold in dark (both AA on the background). Light mode needs a dark accent for
+	   contrast, and dark colors show little chroma; rust keeps far more of it than green or brown at that lightness. */
+	--highlight: light-dark(oklch(0.52 0.16 40), oklch(0.789 0.084 78.1));
+	/* Hover state for highlight links: darker rust in light, lighter gold in dark, so contrast only grows. */
+	--highlight-hover: light-dark(oklch(0.44 0.14 38), oklch(0.87 0.07 80));
 	/* Eyebrow label gradient (light-dark() takes colors, not gradients, so each stop switches on its own).
 	   Gold to crimson rust in light (each near its max in-gamut chroma at that lightness), gold to copper in dark;
 	   every stop stays AA on the background. */
