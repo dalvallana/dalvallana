@@ -25,7 +25,7 @@ export function SiteHeader({ locale, overlay = false }: SiteHeaderProps) {
 					{siteName}
 				</Link>
 				<nav className="flex items-center gap-4 text-sm">
-					<Link to="/{-$locale}/posts" params={params}>
+					<Link to="/{-$locale}/posts" params={params} className="underline-offset-4 hover:underline">
 						{messages[locale].posts}
 					</Link>
 					<div className="flex items-center gap-1">
