@@ -44,6 +44,11 @@
 	--highlight: light-dark(oklch(0.49 0.13 135), oklch(0.789 0.084 78.1));
 	/* Hover state for highlight links: darker green in light, lighter gold in dark, so contrast only grows. */
 	--highlight-hover: light-dark(oklch(0.39 0.11 135), oklch(0.87 0.07 80));
+	/* Eyebrow label gradient (light-dark() takes colors, not gradients, so each stop switches on its own).
+	   Gold to crimson rust in light (each near its max in-gamut chroma at that lightness), gold to copper in dark;
+	   every stop stays AA on the background. */
+	--eyebrow-from: light-dark(oklch(0.5 0.1 90), oklch(0.789 0.084 78.1));
+	--eyebrow-to: light-dark(oklch(0.5 0.19 25), oklch(0.72 0.1 50));
 	/* Page background glow; the middle stop is the background so solid surfaces blend in. */
 	--glow-from: light-dark(oklch(0.976 0.015 90.2), oklch(0.325 0.021 79));
 	--glow-via: var(--background);
@@ -91,6 +96,14 @@
 	--radius-md: calc(var(--radius) * 0.8);
 	--radius-lg: var(--radius);
 	--radius-xl: calc(var(--radius) * 1.4);
+}
+
+/* Gradient text for eyebrow labels. fit-content keeps the gradient across the text, not the whole row. */
+@utility text-eyebrow-gradient {
+	width: fit-content;
+	background-image: linear-gradient(to right, var(--eyebrow-from), var(--eyebrow-to));
+	background-clip: text;
+	color: transparent;
 }
 
 @layer base {
