@@ -87,7 +87,7 @@ function RecentPosts({ locale }: { locale: Locale }) {
 			<Link
 				to="/{-$locale}/posts"
 				params={params}
-				className="self-start border-b border-highlight pb-1 text-sm font-medium tracking-wider text-highlight"
+				className="self-start border-b border-highlight pb-1 text-sm font-medium tracking-wider text-highlight transition-colors hover:border-highlight-hover hover:text-highlight-hover"
 			>
 				{t.allPosts} →
 			</Link>
