@@ -32,14 +32,15 @@ function Hero({ locale }: { locale: Locale }) {
 	return (
 		<section className="relative isolate flex min-h-[85svh] items-center justify-center overflow-hidden px-6">
 			{/* The photo dissolves into the page background at the bottom, whatever the gradient there. */}
-			<div aria-hidden className="absolute inset-0 -z-10 mask-b-from-60% mask-b-to-100%">
+			{/* It stays put while the page scrolls: clip-path, unlike overflow, clips fixed descendants to the hero. */}
+			<div aria-hidden className="absolute inset-0 -z-10 mask-b-from-60% mask-b-to-100% [clip-path:inset(0)]">
 				<img
 					src={hero1376}
 					srcSet={`${hero768} 768w, ${hero1376} 1376w`}
 					sizes="100vw"
 					alt=""
 					fetchPriority="high"
-					className="size-full object-cover"
+					className="fixed inset-x-0 top-0 h-lvh w-full object-cover"
 				/>
 				{/* Strongest behind the text so it stays legible on any photo. */}
 				<div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--hero-veil),var(--hero-veil-edge)_75%)]" />
