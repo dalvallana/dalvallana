@@ -45,7 +45,7 @@ function Hero({ locale }: { locale: Locale }) {
 				<div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--hero-veil),var(--hero-veil-edge)_75%)]" />
 			</div>
 			<div className="max-w-3xl text-center">
-				<p className="text-sm font-medium tracking-[0.3em] text-highlight uppercase">{t.heroGreeting}</p>
+				<p className="text-sm font-semibold tracking-[0.3em] text-highlight uppercase">{t.heroGreeting}</p>
 				<h1 className="mt-6 text-4xl leading-tight text-balance sm:text-6xl">{t.heroClaim}</h1>
 			</div>
 		</section>
@@ -72,7 +72,7 @@ function RecentPosts({ locale }: { locale: Locale }) {
 							<time dateTime={post.date} className="text-xs tracking-widest text-muted-foreground uppercase">
 								{formatDate(post.date, locale)}
 							</time>
-							<h3 className="mt-2 text-2xl">{post.title}</h3>
+							<h3 className="mt-2 text-3xl">{post.title}</h3>
 							<p className="mt-2 text-muted-foreground">{post.description}</p>
 						</Link>
 					</li>

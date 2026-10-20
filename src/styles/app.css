@@ -96,6 +96,8 @@
 	}
 	body {
 		@apply bg-background text-foreground antialiased;
+		/* 18px; set on body rather than html so rem-based spacing and type utilities keep their sizes. */
+		font-size: 1.125rem;
 		background-image: radial-gradient(ellipse at 30% 10%, var(--glow-from), var(--glow-via) 55%, var(--glow-to));
 		background-attachment: fixed;
 	}
