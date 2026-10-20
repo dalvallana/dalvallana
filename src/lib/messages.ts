@@ -1,6 +1,9 @@
 import type { Locale } from '@/lib/i18n'
 
 type Messages = {
+	/** The language's own name, shown in the locale dropdown. */
+	localeName: string
+	language: string
 	toggleTheme: string
 	heroGreeting: string
 	heroClaim: string
@@ -16,6 +19,8 @@ type Messages = {
 // Plain objects until an i18n library is chosen; keys mirror what the UI needs today.
 export const messages: Record<Locale, Messages> = {
 	en: {
+		localeName: 'English',
+		language: 'Language',
 		toggleTheme: 'Toggle dark mode',
 		heroGreeting: 'Hi, I’m Diego',
 		heroClaim: 'Software engineer and animal liberation activist in Madrid',
@@ -28,6 +33,8 @@ export const messages: Record<Locale, Messages> = {
 		goHome: 'Go to the home page',
 	},
 	es: {
+		localeName: 'Español',
+		language: 'Idioma',
 		toggleTheme: 'Cambiar modo oscuro',
 		heroGreeting: 'Hola, soy Diego',
 		heroClaim: 'Ingeniero de software y activista por la liberación animal en Madrid',

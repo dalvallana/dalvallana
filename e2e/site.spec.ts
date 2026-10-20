@@ -21,6 +21,18 @@ test('Spanish URLs serve Spanish content', async ({ page }) => {
 	await expect(page.getByRole('heading', { level: 1, name: 'Hola, mundo' })).toBeVisible()
 })
 
+test('the language dropdown switches the current page to another locale', async ({ page }) => {
+	await page.goto('/posts/hello-world')
+	await page.getByRole('button', { name: /Language/ }).click()
+	await page.getByRole('option', { name: 'Español' }).click()
+	await expect(page).toHaveURL('/es/posts/hello-world')
+	await expect(page.getByRole('heading', { level: 1, name: 'Hola, mundo' })).toBeVisible()
+
+	await page.getByRole('button', { name: /Idioma/ }).click()
+	await page.getByRole('option', { name: 'English' }).click()
+	await expect(page).toHaveURL('/posts/hello-world')
+})
+
 test('a missing translation falls back to English with a notice', async ({ page }) => {
 	await page.goto('/es/posts/only-in-english')
 	await expect(page.getByRole('heading', { level: 1, name: 'Only in English' })).toBeVisible()

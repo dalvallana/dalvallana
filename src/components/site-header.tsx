@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { cn } from 'cn'
 
+import { LocaleSelect } from '@/components/locale-select'
 import { ThemeSwitcher } from '@/components/theme-switcher'
 import { type Locale, localeParam } from '@/lib/i18n'
 import { messages } from '@/lib/messages'
@@ -24,7 +25,10 @@ export function SiteHeader({ locale, overlay = false }: SiteHeaderProps) {
 					<Link to="/{-$locale}/posts" params={params}>
 						{messages[locale].posts}
 					</Link>
-					<ThemeSwitcher locale={locale} />
+					<div className="flex items-center gap-1">
+						<LocaleSelect locale={locale} />
+						<ThemeSwitcher locale={locale} />
+					</div>
 				</nav>
 			</div>
 		</header>
