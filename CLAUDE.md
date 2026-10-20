@@ -22,7 +22,7 @@ Single tests:
 ```bash
 bunx vitest run --project unit src/content/select.test.ts
 bunx vitest run --project browser src/components/theme-toggle.test.tsx
-bunx vitest run -t 'cycles light'              # by test name
+bunx vitest run -t 'flips between'            # by test name
 bunx playwright test e2e/site.spec.ts -g '404'
 ```
 
@@ -68,7 +68,7 @@ bunx playwright test e2e/site.spec.ts -g '404'
 - Colors in `src/styles/app.css` are single `light-dark()` values, and `color-scheme` picks the side. The Tailwind `dark:` variant is a block `@custom-variant` covering `dark` and `system` under `prefers-color-scheme: dark`, so system mode needs no JS.
 - The `theme` cookie is written in the browser (`persistTheme`) and read by `getTheme` (`createIsomorphicFn` in `src/lib/theme-env.ts`) in the root `beforeLoad` for SSR pages.
 - Prerendered pages are built as `system`, and a `ScriptOnce` script in `__root.tsx` applies the cookie before first paint.
-- The toggle is rendered inside `ClientOnly` (`theme-switcher.tsx`) so its label can't mismatch during hydration.
+- The cookie only ever holds `light` or `dark`: `system` is the default, and the toggle flips what is on screen. Its sun/moon icons follow `data-theme` through `dark:`, so it renders the same on the server and needs no `ClientOnly`; it reads the cookie only when pressed.
 - `theme-toggle.tsx` must stay free of `theme-env` imports so its browser test never pulls in `@tanstack/react-start/server`.
 
 **UI.** shadcn uses the React Aria base (`components.json` style `aria-nova`; add components with `bunx shadcn add <name>`). Components use React Aria props (`onPress`, not `onClick`), and `cn` comes from the `cn` package. Once added, components are ours to edit to satisfy lint rules.

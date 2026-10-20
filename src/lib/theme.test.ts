@@ -16,10 +16,14 @@ describe('parseTheme', () => {
 })
 
 describe('nextTheme', () => {
-	it('cycles light → dark → system → light', () => {
-		expect(nextTheme('light')).toBe('dark')
-		expect(nextTheme('dark')).toBe('system')
-		expect(nextTheme('system')).toBe('light')
+	it('flips between light and dark', () => {
+		expect(nextTheme('light', true)).toBe('dark')
+		expect(nextTheme('dark', false)).toBe('light')
+	})
+
+	it('leaves system for the opposite of what the OS shows', () => {
+		expect(nextTheme('system', false)).toBe('dark')
+		expect(nextTheme('system', true)).toBe('light')
 	})
 })
 

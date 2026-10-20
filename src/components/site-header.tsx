@@ -24,7 +24,7 @@ export function SiteHeader({ locale, overlay = false }: SiteHeaderProps) {
 					<Link to="/{-$locale}/posts" params={params}>
 						{messages[locale].posts}
 					</Link>
-					<ThemeSwitcher />
+					<ThemeSwitcher locale={locale} />
 				</nav>
 			</div>
 		</header>

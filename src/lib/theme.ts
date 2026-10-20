@@ -11,8 +11,10 @@ export function parseTheme(value: unknown): Theme {
 	return result.success ? result.data : 'system'
 }
 
-export function nextTheme(theme: Theme): Theme {
-	return themes[(themes.indexOf(theme) + 1) % themes.length]
+/** The toggle flips what is on screen; `system` is only the default and is never chosen again. */
+export function nextTheme(theme: Theme, prefersDark: boolean): Theme {
+	const isDark = theme === 'dark' || (theme === 'system' && prefersDark)
+	return isDark ? 'light' : 'dark'
 }
 
 export function readThemeCookie(cookies: string): Theme {

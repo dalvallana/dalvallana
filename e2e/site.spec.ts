@@ -42,15 +42,19 @@ test('the chosen theme persists and the server renders it', async ({ page }) => 
 	const html = page.locator('html')
 	await expect(html).toHaveAttribute('data-theme', 'system')
 
-	const toggle = page.getByRole('button', { name: /^Theme:/ })
-	await toggle.click() // system → light
-	await toggle.click() // light → dark
+	const toggle = page.getByRole('button', { name: 'Toggle dark mode' })
+	await toggle.click() // system (light in the test browser) → dark
 	await expect(html).toHaveAttribute('data-theme', 'dark')
 
 	// Prerendered page: the inline script applies the cookie before paint.
 	await page.reload()
 	await expect(html).toHaveAttribute('data-theme', 'dark')
-	await expect(toggle).toHaveText('Theme: Dark')
+
+	// System is only the default: from here the toggle flips between the two explicit choices.
+	await toggle.click()
+	await expect(html).toHaveAttribute('data-theme', 'light')
+	await toggle.click()
+	await expect(html).toHaveAttribute('data-theme', 'dark')
 
 	// SSR page: the server reads the cookie itself.
 	const response = await page.request.get('/posts/does-not-exist')
