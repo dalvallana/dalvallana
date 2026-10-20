@@ -73,6 +73,8 @@ bunx playwright test e2e/site.spec.ts -g '404'
 
 **UI.** shadcn uses the React Aria base (`components.json` style `aria-nova`; add components with `bunx shadcn add <name>`). Components use React Aria props (`onPress`, not `onClick`), and `cn` comes from the `cn` package. Once added, components are ours to edit to satisfy lint rules.
 
+- Always build UI from shadcn components when one fits (`bunx shadcn add <name>`, then compose it); don't hand-roll a widget on raw `react-aria-components` that shadcn already provides. If the registry (`ui.shadcn.com`) is unreachable, stop and say so instead of working around it.
+
 ## Conventions and lint quirks
 
 - Formatting: tabs, single quotes, no semicolons, 120 columns. Imports and Tailwind classes are sorted by Oxfmt.
