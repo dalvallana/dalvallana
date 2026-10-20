@@ -1,5 +1,6 @@
-import { Link, useParams } from '@tanstack/react-router'
+import { useParams } from '@tanstack/react-router'
 
+import { TextLink } from '@/components/text-link'
 import { defaultLocale, localeParam, parseLocale } from '@/lib/i18n'
 import { messages } from '@/lib/messages'
 
@@ -13,9 +14,9 @@ export function NotFoundPage() {
 				<h1 className="text-2xl font-semibold">{t.notFoundTitle}</h1>
 				<p className="text-muted-foreground">{t.notFoundBody}</p>
 			</div>
-			<Link to="/{-$locale}" params={{ locale: localeParam(locale) }} className="self-start underline">
+			<TextLink to="/{-$locale}" params={{ locale: localeParam(locale) }} className="self-start">
 				{t.goHome}
-			</Link>
+			</TextLink>
 		</main>
 	)
 }

@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 
+import { TextLink } from '@/components/text-link'
 import { localeParam } from '@/lib/i18n'
 import { messages } from '@/lib/messages'
 import { postsQueryOptions } from '@/queries/posts'
@@ -21,13 +22,13 @@ function PostsPage() {
 			<ul className="flex flex-col gap-6">
 				{posts.map((post) => (
 					<li key={post.slug} className="flex flex-col gap-1">
-						<Link
+						<TextLink
 							to="/{-$locale}/posts/$slug"
 							params={{ locale: localeParam(locale), slug: post.slug }}
-							className="self-start text-lg font-medium hover:underline"
+							className="self-start text-lg"
 						>
 							{post.title}
-						</Link>
+						</TextLink>
 						<p className="text-sm text-muted-foreground">{post.description}</p>
 					</li>
 				))}

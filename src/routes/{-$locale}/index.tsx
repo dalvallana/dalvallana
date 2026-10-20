@@ -3,6 +3,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 
 import hero768 from '@/assets/hero-768.webp'
 import hero1376 from '@/assets/hero-1376.webp'
+import { TextLink } from '@/components/text-link'
 import { formatDate } from '@/lib/date'
 import { type Locale, localeParam } from '@/lib/i18n'
 import { messages } from '@/lib/messages'
@@ -84,13 +85,13 @@ function RecentPosts({ locale }: { locale: Locale }) {
 					))}
 				</ul>
 			</div>
-			<Link
+			<TextLink
 				to="/{-$locale}/posts"
 				params={params}
-				className="self-start border-b border-highlight pb-1 text-sm font-medium tracking-wider text-highlight transition-colors hover:border-highlight-hover hover:text-highlight-hover"
+				className="self-start border-b border-highlight pb-1 text-sm tracking-wider hover:border-highlight-hover hover:no-underline"
 			>
 				{t.allPosts} →
-			</Link>
+			</TextLink>
 		</section>
 	)
 }
