@@ -21,7 +21,17 @@ export function LocaleSelect({ locale }: { locale: Locale }) {
 				className="border-transparent bg-transparent font-medium hover:bg-foreground/10 dark:bg-transparent dark:hover:bg-foreground/10"
 			>
 				{/* Just the name: by default the trigger repeats the whole option, check mark included. */}
-				<SelectValue>{({ selectedText }) => selectedText}</SelectValue>
+				{/* Narrow screens show the code to keep the header on one row; screen readers still hear the name. */}
+				<SelectValue>
+					{({ selectedText }) => (
+						<>
+							<span aria-hidden className="uppercase sm:hidden">
+								{locale}
+							</span>
+							<span className="sr-only sm:not-sr-only">{selectedText}</span>
+						</>
+					)}
+				</SelectValue>
 			</SelectTrigger>
 			<SelectContent placement="bottom end">
 				{/* The group carries the popover's padding. */}

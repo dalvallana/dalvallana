@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises'
+
 import { expect, test } from '@playwright/test'
 
 test('home links to the posts list and on to an interactive post', async ({ page }) => {
@@ -13,6 +15,33 @@ test('home links to the posts list and on to an interactive post', async ({ page
 
 	await page.getByRole('button', { name: 'Increment' }).click()
 	await expect(page.getByText('Count: 1')).toBeVisible()
+})
+
+test('the header links to the resume in each language', async ({ page }) => {
+	await page.goto('/')
+	await page.getByRole('link', { name: 'Resume', exact: true }).click()
+	await expect(page).toHaveURL('/resume')
+	await expect(page.getByRole('heading', { level: 1, name: 'Resume' })).toBeVisible()
+	await expect(page.getByRole('heading', { level: 2, name: 'Experience' })).toBeVisible()
+
+	await page.goto('/es')
+	await page.getByRole('link', { name: 'Currículum', exact: true }).click()
+	await expect(page).toHaveURL('/es/resume')
+	await expect(page.getByRole('heading', { level: 1, name: 'Currículum' })).toBeVisible()
+	await expect(page.getByRole('heading', { level: 2, name: 'Experiencia' })).toBeVisible()
+})
+
+test('the resume offers its PDF for download', async ({ page }) => {
+	await page.goto('/resume')
+	const link = page.getByRole('link', { name: 'Download PDF' })
+	await expect(link).toHaveAttribute('download')
+
+	const href = (await link.getAttribute('href')) ?? ''
+	const response = await page.request.get(href)
+	expect(response.status()).toBe(200)
+	expect(response.headers()['content-type']).toContain('application/pdf')
+	// Byte for byte: the build must not rewrite it (prerendering once corrupted it as text).
+	expect(await response.body()).toEqual(await readFile(`public${href}`))
 })
 
 test('Spanish URLs serve Spanish content', async ({ page }) => {
@@ -67,6 +96,7 @@ test('unknown posts and locales respond with 404', async ({ page }) => {
 	const missingPost = await page.goto('/posts/does-not-exist')
 	expect(missingPost?.status()).toBe(404)
 	await expect(page.getByRole('heading', { name: 'Page not found' })).toBeVisible()
+	await expect(page.getByRole('banner').getByRole('link', { name: 'Posts', exact: true })).toBeVisible()
 
 	const unknownLocale = await page.goto('/xx')
 	expect(unknownLocale?.status()).toBe(404)

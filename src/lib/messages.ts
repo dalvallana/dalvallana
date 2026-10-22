@@ -14,6 +14,14 @@ type Messages = {
 	recentPosts: string
 	posts: string
 	allPosts: string
+	resume: string
+	experience: string
+	education: string
+	skills: string
+	strengths: string
+	/** End of the current position's date range. */
+	present: string
+	downloadPdf: string
 	fallbackNotice: string
 	notFoundTitle: string
 	notFoundBody: string
@@ -37,6 +45,13 @@ export const messages: Record<Locale, Messages> = {
 		recentPosts: 'Recent writing',
 		posts: 'Posts',
 		allPosts: 'Read all posts',
+		resume: 'Resume',
+		experience: 'Experience',
+		education: 'Education',
+		skills: 'Skills',
+		strengths: 'Strengths',
+		present: 'Present',
+		downloadPdf: 'Download PDF',
 		fallbackNotice: 'This post is not available in English yet.',
 		notFoundTitle: 'Page not found',
 		notFoundBody: 'The page you are looking for does not exist.',
@@ -57,6 +72,13 @@ export const messages: Record<Locale, Messages> = {
 		recentPosts: 'Artículos recientes',
 		posts: 'Artículos',
 		allPosts: 'Ver todos los artículos',
+		resume: 'Currículum',
+		experience: 'Experiencia',
+		education: 'Formación',
+		skills: 'Habilidades',
+		strengths: 'Fortalezas',
+		present: 'Actualidad',
+		downloadPdf: 'Descargar PDF',
 		fallbackNotice: 'Este artículo aún no está disponible en español; estás leyendo la versión en inglés.',
 		notFoundTitle: 'Página no encontrada',
 		notFoundBody: 'La página que buscas no existe.',

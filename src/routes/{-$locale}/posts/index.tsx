@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 
+import { PageTitle } from '@/components/page-title'
 import { TextLink } from '@/components/text-link'
 import { alternateLinks } from '@/lib/alternates'
 import { localeParam } from '@/lib/i18n'
@@ -20,7 +21,7 @@ function PostsPage() {
 	const { data: posts } = useSuspenseQuery(postsQueryOptions(locale))
 	return (
 		<section className="flex flex-col gap-8">
-			<h1 className="text-3xl font-semibold tracking-tight">{messages[locale].posts}</h1>
+			<PageTitle>{messages[locale].posts}</PageTitle>
 			<ul className="flex flex-col gap-6">
 				{posts.map((post) => (
 					<li key={post.slug} className="flex flex-col gap-1">
