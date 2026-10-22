@@ -64,22 +64,27 @@ function Hero({ locale }: { locale: Locale }) {
 function Intro({ locale }: { locale: Locale }) {
 	const t = messages[locale]
 	return (
-		// On narrow screens the photo stacks above the text instead of squeezing it.
-		<section aria-label={t.aboutLabel} className="flex flex-col-reverse items-center gap-8 sm:flex-row sm:items-start">
-			<div className="flex flex-1 flex-col gap-4 text-xl leading-relaxed">
-				{t.intro.map((paragraph) => (
-					<p key={paragraph}>{paragraph}</p>
-				))}
+		<section aria-labelledby="about" className="flex flex-col gap-8">
+			<h2 id="about" className="text-eyebrow-gradient font-sans text-sm font-bold tracking-[0.3em] uppercase">
+				{t.about}
+			</h2>
+			{/* On narrow screens the photo stacks above the text instead of squeezing it. */}
+			<div className="flex flex-col-reverse items-center gap-8 sm:flex-row sm:items-start">
+				<div className="flex flex-1 flex-col gap-4 text-xl leading-relaxed">
+					{t.intro.map((paragraph) => (
+						<p key={paragraph}>{paragraph}</p>
+					))}
+				</div>
+				<img
+					src={portrait640}
+					srcSet={`${portrait384} 384w, ${portrait640} 640w`}
+					sizes="(min-width: 40rem) 16rem, 14rem"
+					width={640}
+					height={640}
+					alt={t.portraitAlt}
+					className="w-56 shrink-0 rounded-full shadow-2xl shadow-black/70 sm:w-64"
+				/>
 			</div>
-			<img
-				src={portrait640}
-				srcSet={`${portrait384} 384w, ${portrait640} 640w`}
-				sizes="(min-width: 40rem) 16rem, 14rem"
-				width={640}
-				height={640}
-				alt={t.portraitAlt}
-				className="w-56 shrink-0 rounded-full shadow-2xl shadow-black/70 sm:w-64"
-			/>
 		</section>
 	)
 }

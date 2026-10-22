@@ -9,7 +9,7 @@ type Messages = {
 	menu: string
 	heroName: string
 	heroClaim: string
-	aboutLabel: string
+	about: string
 	portraitAlt: string
 	/** One string per paragraph. */
 	intro: readonly string[]
@@ -39,7 +39,7 @@ export const messages: Record<Locale, Messages> = {
 		menu: 'Menu',
 		heroName: 'Diego Alvarado Orellana',
 		heroClaim: 'Software engineer and animal liberation activist in Madrid',
-		aboutLabel: 'About me',
+		about: 'About',
 		portraitAlt: 'Diego smiling in a selfie on a tiled rooftop, with a tabby cat walking toward the camera',
 		intro: [
 			'Hello! I’m a software engineer at Apple. When I’m not building apps, I put my time into helping animals through activism and volunteering.',
@@ -67,7 +67,7 @@ export const messages: Record<Locale, Messages> = {
 		menu: 'Menú',
 		heroName: 'Diego Alvarado Orellana',
 		heroClaim: 'Ingeniero de software y activista por la liberación animal en Madrid',
-		aboutLabel: 'Sobre mí',
+		about: 'Sobre mí',
 		portraitAlt: 'Diego sonriendo en un selfi sobre un tejado, con un gato atigrado caminando hacia la cámara',
 		intro: [
 			'¡Hola! Soy ingeniero de software en Apple. Cuando no estoy creando aplicaciones, dedico mi tiempo a ayudar a los animales, ya sea a través del activismo o el voluntariado.',
