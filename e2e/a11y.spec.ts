@@ -1,7 +1,16 @@
 import { AxeBuilder } from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 
-const paths = ['/', '/posts', '/posts/hello-world', '/es', '/es/posts/hello-world', '/posts/does-not-exist']
+const paths = [
+	'/',
+	'/posts',
+	'/posts/hello-world',
+	'/es',
+	'/es/posts/hello-world',
+	'/resume',
+	'/es/resume',
+	'/posts/does-not-exist',
+]
 const themes = ['light', 'dark'] as const
 
 for (const theme of themes) {

@@ -23,8 +23,22 @@ export default defineConfig({
 		contentCollections(),
 		tanstackStart({
 			// Locale roots and indexes are listed explicitly; individual posts are found by crawling their links.
-			prerender: { enabled: true, crawlLinks: true, failOnError: true },
-			pages: [{ path: '/' }, { path: '/es' }, { path: '/posts' }, { path: '/es/posts' }],
+			prerender: {
+				enabled: true,
+				crawlLinks: true,
+				failOnError: true,
+				// Crawled links to files (like the resume PDF) are already copied from public/; the prerenderer would
+				// fetch them again and rewrite them as text, corrupting binaries.
+				filter: ({ path }) => !/\.\w+$/.test(path),
+			},
+			pages: [
+				{ path: '/' },
+				{ path: '/es' },
+				{ path: '/posts' },
+				{ path: '/es/posts' },
+				{ path: '/resume' },
+				{ path: '/es/resume' },
+			],
 		}),
 		viteReact({ include: /\.(mdx|js|jsx|ts|tsx)$/ }),
 	],

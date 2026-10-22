@@ -18,15 +18,21 @@ export function SiteHeader({ locale, overlay = false }: SiteHeaderProps) {
 	return (
 		// Pinned on every page; sticky keeps the header's own space in the flow, so content needs no offset.
 		<header
-			className={cn('top-0 z-20 bg-background/10 shadow-md backdrop-blur-sm', overlay ? 'fixed inset-x-0' : 'sticky')}
+			className={cn(
+				'top-0 z-20 bg-background/10 shadow-md backdrop-blur-sm print:hidden',
+				overlay ? 'fixed inset-x-0' : 'sticky',
+			)}
 		>
-			<div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
+			<div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-5 sm:gap-4 sm:px-5">
 				<Link to="/{-$locale}" params={params} className="font-heading text-xl">
 					{siteName}
 				</Link>
-				<nav className="flex items-center gap-4 text-sm">
+				<nav className="flex items-center gap-3 text-sm sm:gap-4">
 					<Link to="/{-$locale}/posts" params={params} className="underline-offset-4 hover:underline">
 						{messages[locale].posts}
+					</Link>
+					<Link to="/{-$locale}/resume" params={params} className="underline-offset-4 hover:underline">
+						{messages[locale].resume}
 					</Link>
 					<div className="flex items-center gap-1">
 						<LocaleSelect locale={locale} />

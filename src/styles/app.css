@@ -67,6 +67,20 @@
 	color-scheme: dark;
 }
 
+/* Paper is white: print the light palette whatever the theme, without the page glow. */
+@media print {
+	@page {
+		margin: 1.2cm;
+	}
+	:root,
+	[data-theme] {
+		color-scheme: light;
+	}
+	body {
+		background: none;
+	}
+}
+
 @theme {
 	--font-sans: 'Work Sans Variable', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
 	--font-heading: 'EB Garamond Variable', ui-serif, Georgia, Cambria, 'Times New Roman', serif;
@@ -105,6 +119,11 @@
 	background-image: linear-gradient(to right, var(--eyebrow-from), var(--eyebrow-to));
 	background-clip: text;
 	color: transparent;
+	/* Printers drop backgrounds, which would leave the text invisible, so paper gets a solid color. */
+	@media print {
+		background-image: none;
+		color: var(--highlight);
+	}
 }
 
 @layer base {
