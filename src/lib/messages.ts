@@ -5,6 +5,8 @@ type Messages = {
 	localeName: string
 	language: string
 	toggleTheme: string
+	/** Names the small-screen navigation button and its popover. */
+	menu: string
 	heroName: string
 	heroClaim: string
 	aboutLabel: string
@@ -34,6 +36,7 @@ export const messages: Record<Locale, Messages> = {
 		localeName: 'English',
 		language: 'Language',
 		toggleTheme: 'Toggle dark mode',
+		menu: 'Menu',
 		heroName: 'Diego Alvarado Orellana',
 		heroClaim: 'Software engineer and animal liberation activist in Madrid',
 		aboutLabel: 'About me',
@@ -61,6 +64,7 @@ export const messages: Record<Locale, Messages> = {
 		localeName: 'Español',
 		language: 'Idioma',
 		toggleTheme: 'Cambiar modo oscuro',
+		menu: 'Menú',
 		heroName: 'Diego Alvarado Orellana',
 		heroClaim: 'Ingeniero de software y activista por la liberación animal en Madrid',
 		aboutLabel: 'Sobre mí',

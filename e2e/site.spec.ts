@@ -44,6 +44,40 @@ test('the resume offers its PDF for download', async ({ page }) => {
 	expect(await response.body()).toEqual(await readFile(`public${href}`))
 })
 
+test('the header marks the current section in bold', async ({ page }) => {
+	await page.goto('/')
+	const postsLink = page.getByRole('banner').getByRole('link', { name: 'Posts', exact: true })
+	await expect(postsLink).not.toHaveClass(/font-semibold/)
+
+	await page.goto('/posts/hello-world')
+	await expect(postsLink).toHaveClass(/font-semibold/)
+	// Only the other sections underline on hover.
+	await expect(postsLink).not.toHaveClass(/hover:underline/)
+	await expect(page.getByRole('banner').getByRole('link', { name: 'Resume', exact: true })).toHaveClass(
+		/hover:underline/,
+	)
+})
+
+test.describe('on a small screen', () => {
+	test.use({ viewport: { width: 375, height: 700 } })
+
+	test('the menu button replaces the inline nav, and the other controls stay visible', async ({ page }) => {
+		await page.goto('/')
+		const banner = page.getByRole('banner')
+		await expect(banner.getByRole('link', { name: 'Posts', exact: true })).toBeHidden()
+		await expect(banner.getByRole('link', { name: 'dalvallana' })).toBeVisible()
+		await expect(banner.getByRole('button', { name: /Language/ })).toBeVisible()
+		await expect(banner.getByRole('button', { name: 'Toggle dark mode' })).toBeVisible()
+
+		await banner.getByRole('button', { name: 'Menu' }).click()
+		const menu = page.getByRole('dialog', { name: 'Menu' })
+		await expect(menu.getByRole('link', { name: 'Resume', exact: true })).toBeVisible()
+		await menu.getByRole('link', { name: 'Posts', exact: true }).click()
+		await expect(page).toHaveURL('/posts')
+		await expect(menu).toBeHidden()
+	})
+})
+
 test('Spanish URLs serve Spanish content', async ({ page }) => {
 	await page.goto('/es/posts/hello-world')
 	await expect(page.locator('html')).toHaveAttribute('lang', 'es')
