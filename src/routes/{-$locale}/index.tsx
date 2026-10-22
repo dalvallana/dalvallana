@@ -55,7 +55,14 @@ function Hero({ locale }: { locale: Locale }) {
 			</div>
 			<div className="flex max-w-3xl flex-col gap-6 text-center">
 				<p className="text-eyebrow-gradient self-center text-sm font-bold tracking-[0.3em] uppercase">{t.heroName}</p>
-				<h1 className="text-4xl leading-tight text-balance sm:text-6xl">{t.heroClaim}</h1>
+				<h1 className="text-4xl leading-tight text-balance sm:text-6xl">
+					{/* The trailing space keeps the words apart in the text content; it collapses at the end of each block. */}
+					{t.heroClaim.map((line) => (
+						<span key={line} className="block">
+							{line}{' '}
+						</span>
+					))}
+				</h1>
 			</div>
 		</section>
 	)

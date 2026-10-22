@@ -8,7 +8,8 @@ type Messages = {
 	/** Names the small-screen navigation button and its popover. */
 	menu: string
 	heroName: string
-	heroClaim: string
+	/** One string per line. */
+	heroClaim: readonly string[]
 	about: string
 	portraitAlt: string
 	/** One string per paragraph. */
@@ -38,11 +39,11 @@ export const messages: Record<Locale, Messages> = {
 		toggleTheme: 'Toggle dark mode',
 		menu: 'Menu',
 		heroName: 'Diego Alvarado Orellana',
-		heroClaim: 'Software engineer and animal liberation activist in Madrid',
+		heroClaim: ['Software engineer and', 'animal liberation activist'],
 		about: 'About',
 		portraitAlt: 'Diego smiling in a selfie on a tiled rooftop, with a tabby cat walking toward the camera',
 		intro: [
-			'Hello! I’m a software engineer at Apple. When I’m not building apps, I put my time into helping animals through activism and volunteering.',
+			'Hello! I’m a software engineer at Apple, living in Madrid. When I’m not building apps, I put my time into helping animals through activism and volunteering.',
 			'I also like playing tennis, building with Lego and tinkering with home automation. Lately I’ve been learning about gardening, nutrition, carpentry and construction.',
 		],
 		recentPosts: 'Recent writing',
@@ -66,11 +67,11 @@ export const messages: Record<Locale, Messages> = {
 		toggleTheme: 'Cambiar modo oscuro',
 		menu: 'Menú',
 		heroName: 'Diego Alvarado Orellana',
-		heroClaim: 'Ingeniero de software y activista por la liberación animal en Madrid',
+		heroClaim: ['Ingeniero de software y', 'activista por la liberación animal'],
 		about: 'Sobre mí',
 		portraitAlt: 'Diego sonriendo en un selfi sobre un tejado, con un gato atigrado caminando hacia la cámara',
 		intro: [
-			'¡Hola! Soy ingeniero de software en Apple. Cuando no estoy creando aplicaciones, dedico mi tiempo a ayudar a los animales, ya sea a través del activismo o el voluntariado.',
+			'¡Hola! Soy ingeniero de software en Apple y vivo en Madrid. Cuando no estoy creando aplicaciones, dedico mi tiempo a ayudar a los animales, ya sea a través del activismo o el voluntariado.',
 			'También me gusta jugar tenis, construir con Lego y trastear con aparatos de domótica. Últimamente estoy aprendiendo sobre jardinería, nutrición, carpintería y construcción.',
 		],
 		recentPosts: 'Artículos recientes',
