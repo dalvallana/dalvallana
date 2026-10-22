@@ -16,3 +16,9 @@ export function parseLocale(param?: string): Locale | null {
 export function localeParam(locale: Locale): Locale | undefined {
 	return locale === defaultLocale ? undefined : locale
 }
+
+/** The URL of `path` (written without a locale prefix, like `/posts/x`) in `locale`. */
+export function localizePath(locale: Locale, path: string): string {
+	if (locale === defaultLocale) return path
+	return path === '/' ? `/${locale}` : `/${locale}${path}`
+}

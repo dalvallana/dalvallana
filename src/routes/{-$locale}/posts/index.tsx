@@ -2,6 +2,7 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 
 import { TextLink } from '@/components/text-link'
+import { alternateLinks } from '@/lib/alternates'
 import { localeParam } from '@/lib/i18n'
 import { messages } from '@/lib/messages'
 import { postsQueryOptions } from '@/queries/posts'
@@ -10,6 +11,7 @@ export const Route = createFileRoute('/{-$locale}/posts/')({
 	loader: async ({ context: { queryClient, locale } }) => {
 		await queryClient.query(postsQueryOptions(locale))
 	},
+	head: () => ({ links: alternateLinks('/posts') }),
 	component: PostsPage,
 })
 

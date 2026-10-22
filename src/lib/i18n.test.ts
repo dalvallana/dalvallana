@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { defaultLocale, isLocale, localeParam, parseLocale } from '@/lib/i18n'
+import { defaultLocale, isLocale, localeParam, localizePath, parseLocale } from '@/lib/i18n'
 
 describe('parseLocale', () => {
 	it('defaults to English when the locale segment is missing', () => {
@@ -34,5 +34,17 @@ describe('localeParam', () => {
 
 	it('keeps other locales in URLs', () => {
 		expect(localeParam('es')).toBe('es')
+	})
+})
+
+describe('localizePath', () => {
+	it('leaves default-locale paths unprefixed', () => {
+		expect(localizePath('en', '/')).toBe('/')
+		expect(localizePath('en', '/posts/x')).toBe('/posts/x')
+	})
+
+	it('prefixes other locales without a trailing slash on the home page', () => {
+		expect(localizePath('es', '/')).toBe('/es')
+		expect(localizePath('es', '/posts/x')).toBe('/es/posts/x')
 	})
 })

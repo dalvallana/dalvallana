@@ -33,6 +33,29 @@ test('the language dropdown switches the current page to another locale', async 
 	await expect(page).toHaveURL('/posts/hello-world')
 })
 
+test('pages declare their translations to search engines', async ({ page }) => {
+	const hreflangs = async (path: string) => {
+		await page.goto(path)
+		return page
+			.locator('link[rel="alternate"][hreflang]')
+			.evaluateAll((links) =>
+				links.map((link) => `${link.getAttribute('hreflang')} ${new URL(link.getAttribute('href') ?? '').pathname}`),
+			)
+	}
+
+	expect(await hreflangs('/')).toEqual(['en /', 'es /es', 'x-default /'])
+	expect(await hreflangs('/es/posts/hello-world')).toEqual([
+		'en /posts/hello-world',
+		'es /es/posts/hello-world',
+		'x-default /posts/hello-world',
+	])
+	// English-only posts have no alternates, and their Spanish fallback defers to the English URL.
+	expect(await hreflangs('/posts/quiet-tools')).toEqual([])
+	await page.goto('/es/posts/only-in-english')
+	const canonical = await page.locator('link[rel="canonical"]').getAttribute('href')
+	expect(new URL(canonical ?? '').pathname).toBe('/posts/only-in-english')
+})
+
 test('a missing translation falls back to English with a notice', async ({ page }) => {
 	await page.goto('/es/posts/only-in-english')
 	await expect(page.getByRole('heading', { level: 1, name: 'Only in English' })).toBeVisible()

@@ -1,4 +1,4 @@
-import { defaultLocale, type Locale } from '@/lib/i18n'
+import { defaultLocale, type Locale, locales } from '@/lib/i18n'
 
 export type PostMeta = {
 	locale: Locale
@@ -11,7 +11,8 @@ export type PostMeta = {
 	filePath: string
 }
 
-export type PostResult = { post: PostMeta; fallback: boolean }
+/** `translations` lists every locale the post exists in, for hreflang. */
+export type PostResult = { post: PostMeta; fallback: boolean; translations: Locale[] }
 
 type SelectOptions = { includeDrafts: boolean }
 
@@ -29,10 +30,12 @@ export function selectPost(
 	const matches = (post: PostMeta, inLocale: Locale) =>
 		post.locale === inLocale && post.slug === slug && (includeDrafts || !post.draft)
 
+	const translations = locales.filter((inLocale) => posts.some((post) => matches(post, inLocale)))
+
 	const exact = posts.find((post) => matches(post, locale))
-	if (exact) return { post: exact, fallback: false }
+	if (exact) return { post: exact, fallback: false, translations }
 	if (locale === defaultLocale) return null
 
 	const fallback = posts.find((post) => matches(post, defaultLocale))
-	return fallback ? { post: fallback, fallback: true } : null
+	return fallback ? { post: fallback, fallback: true, translations } : null
 }

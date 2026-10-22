@@ -6,6 +6,7 @@ import hero1376 from '@/assets/hero-1376.webp'
 import portrait384 from '@/assets/portrait-384.webp'
 import portrait640 from '@/assets/portrait-640.webp'
 import { TextLink } from '@/components/text-link'
+import { alternateLinks } from '@/lib/alternates'
 import { formatDate } from '@/lib/date'
 import { type Locale, localeParam } from '@/lib/i18n'
 import { messages } from '@/lib/messages'
@@ -17,6 +18,7 @@ export const Route = createFileRoute('/{-$locale}/')({
 	loader: async ({ context: { queryClient, locale } }) => {
 		await queryClient.query(postsQueryOptions(locale))
 	},
+	head: () => ({ links: alternateLinks('/') }),
 	component: Home,
 })
 

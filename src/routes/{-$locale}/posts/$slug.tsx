@@ -4,18 +4,32 @@ import { Suspense } from 'react'
 
 import { mdxComponents } from '@/components/mdx/mdx-components'
 import { getPostBody, preloadPostBody } from '@/content/mdx'
+import { alternateLinks, canonicalLink } from '@/lib/alternates'
 import { messages } from '@/lib/messages'
 import { postQueryOptions } from '@/queries/posts'
 
 export const Route = createFileRoute('/{-$locale}/posts/$slug')({
 	loader: async ({ context: { queryClient, locale }, params: { slug } }) => {
-		const { post } = await queryClient.query(postQueryOptions(locale, slug))
+		const { post, fallback, translations } = await queryClient.query(postQueryOptions(locale, slug))
 		await preloadPostBody(post.filePath)
-		return { title: post.title, description: post.description }
+		return {
+			title: post.title,
+			description: post.description,
+			path: `/posts/${slug}`,
+			fallback,
+			translations,
+			postLocale: post.locale,
+		}
 	},
-	head: ({ loaderData }) => ({
-		meta: loaderData ? [{ title: loaderData.title }, { name: 'description', content: loaderData.description }] : [],
-	}),
+	head: ({ loaderData }) => {
+		if (!loaderData) return {}
+		const { title, description, path, fallback, translations, postLocale } = loaderData
+		return {
+			meta: [{ title }, { name: 'description', content: description }],
+			// A fallback repeats another locale's post, so it defers to that URL instead of competing with it.
+			links: fallback ? [canonicalLink(postLocale, path)] : alternateLinks(path, translations),
+		}
+	},
 	component: PostPage,
 })
 

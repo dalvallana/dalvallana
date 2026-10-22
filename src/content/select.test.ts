@@ -44,6 +44,7 @@ describe('selectPost', () => {
 		expect(selectPost(posts, 'es', 'old', { includeDrafts: false })).toEqual({
 			post: posts[3],
 			fallback: false,
+			translations: ['en', 'es'],
 		})
 	})
 
@@ -51,6 +52,7 @@ describe('selectPost', () => {
 		expect(selectPost(posts, 'es', 'new', { includeDrafts: false })).toEqual({
 			post: posts[1],
 			fallback: true,
+			translations: ['en'],
 		})
 	})
 
