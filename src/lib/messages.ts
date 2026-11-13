@@ -22,6 +22,9 @@ type Messages = {
 	education: string
 	skills: string
 	strengths: string
+	readingTime: (minutes: number) => string
+	/** Precedes the list of languages a translated post exists in. */
+	availableIn: string
 	/** End of the current position's date range. */
 	present: string
 	downloadPdf: string
@@ -61,6 +64,8 @@ export const messages: Record<Locale, Messages> = {
 		education: 'Education',
 		skills: 'Skills',
 		strengths: 'Strengths',
+		readingTime: (minutes) => `${minutes} min read`,
+		availableIn: 'Available in:',
 		present: 'Present',
 		downloadPdf: 'Download PDF',
 		fallbackNotice: 'This post is not available in English yet.',
@@ -94,6 +99,8 @@ export const messages: Record<Locale, Messages> = {
 		education: 'Formación',
 		skills: 'Habilidades',
 		strengths: 'Fortalezas',
+		readingTime: (minutes) => `${minutes} min de lectura`,
+		availableIn: 'Disponible en:',
 		present: 'Actualidad',
 		downloadPdf: 'Descargar PDF',
 		fallbackNotice: 'Este artículo aún no está disponible en español; estás leyendo la versión en inglés.',

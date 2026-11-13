@@ -8,6 +8,9 @@ export type PostMeta = {
 	date: string
 	draft: boolean
 	tags: string[]
+	cover?: { image: string; alt: string }
+	/** Minutes, computed from the body at build time. */
+	readingTime: number
 	filePath: string
 }
 

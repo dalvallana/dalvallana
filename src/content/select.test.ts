@@ -11,6 +11,7 @@ function post(overrides: Partial<PostMeta>): PostMeta {
 		date: '2026-01-01',
 		draft: false,
 		tags: [],
+		readingTime: 1,
 		filePath: 'en/hello.mdx',
 		...overrides,
 	}
