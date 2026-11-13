@@ -214,3 +214,22 @@ test('the footer sits at the bottom of the viewport on short pages', async ({ pa
 	const viewport = page.viewportSize()
 	expect(box && viewport && Math.round(box.y + box.height)).toBe(viewport?.height)
 })
+
+test('a translated post links to its other languages', async ({ page }) => {
+	await page.goto('/posts/veganism-is-justice')
+	const article = page.getByRole('article')
+	await expect(article).toContainText('Available in:')
+	await expect(article.getByRole('link', { name: 'English' })).toHaveCount(0)
+
+	await article.getByRole('link', { name: 'Español' }).click()
+	await expect(page).toHaveURL('/es/posts/veganism-is-justice')
+	await expect(page.getByRole('article').getByRole('link', { name: 'English' })).toHaveAttribute(
+		'href',
+		'/posts/veganism-is-justice',
+	)
+})
+
+test('an untranslated post does not list languages', async ({ page }) => {
+	await page.goto('/posts/quiet-tools')
+	await expect(page.getByRole('article')).not.toContainText('Available in:')
+})
