@@ -38,7 +38,8 @@ function RootDocument({ children }: { children: ReactNode }) {
 				<ScriptOnce>{themeScript}</ScriptOnce>
 				<HeadContent />
 			</head>
-			<body>
+			{/* A column at least one screen tall: each page's <main> grows, so short pages still push the footer down. */}
+			<body className="flex min-h-svh flex-col">
 				{children}
 				<Scripts />
 			</body>

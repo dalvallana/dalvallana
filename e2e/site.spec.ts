@@ -178,3 +178,39 @@ test('default-locale prefixed URLs redirect to unprefixed ones', async ({ page }
 	expect(response.status()).toBe(301)
 	expect(response.headers().location).toMatch(/^(?:http:\/\/127\.0\.0\.1:4173)?\/$/)
 })
+
+test('the footer links to the source code and social profiles in each language', async ({ page }) => {
+	await page.goto('/')
+	const footer = page.getByRole('contentinfo')
+	const repoLink = footer.getByRole('link', { name: 'View the code on GitHub (opens in a new tab)' })
+	await expect(repoLink).toHaveAttribute('href', 'https://github.com/dalvallana/dalvallana')
+	await expect(repoLink).toHaveAttribute('target', '_blank')
+	const socials = footer.getByRole('list', { name: 'Find me elsewhere' })
+	await expect(socials.getByRole('link', { name: 'Email' })).toHaveAttribute('href', 'mailto:me@dalvallana.dev')
+	await expect(socials.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
+		'href',
+		'https://www.linkedin.com/in/dalvallana',
+	)
+	await expect(socials.getByRole('link', { name: 'Instagram' })).toHaveAttribute(
+		'href',
+		'https://www.instagram.com/dalvallana',
+	)
+	await expect(socials.getByRole('link', { name: 'X (Twitter)' })).toHaveAttribute('href', 'https://x.com/dalvallana')
+	await Promise.all(
+		['LinkedIn', 'Instagram', 'X (Twitter)'].map((name) =>
+			expect(socials.getByRole('link', { name: `${name} (opens in a new tab)` })).toHaveAttribute('target', '_blank'),
+		),
+	)
+	await expect(socials.getByRole('link', { name: 'Email' })).not.toHaveAttribute('target')
+	await expect(footer).toContainText(`© ${new Date().getFullYear()} Diego Alvarado Orellana`)
+
+	await page.goto('/es')
+	await expect(page.getByRole('contentinfo').getByRole('link', { name: 'Ver el código en GitHub' })).toBeVisible()
+})
+
+test('the footer sits at the bottom of the viewport on short pages', async ({ page }) => {
+	await page.goto('/posts/does-not-exist')
+	const box = await page.getByRole('contentinfo').boundingBox()
+	const viewport = page.viewportSize()
+	expect(box && viewport && Math.round(box.y + box.height)).toBe(viewport?.height)
+})

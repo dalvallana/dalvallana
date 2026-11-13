@@ -1,5 +1,6 @@
 import { createFileRoute, notFound, Outlet, redirect, useMatch } from '@tanstack/react-router'
 
+import { SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
 import { defaultLocale, parseLocale } from '@/lib/i18n'
 
@@ -26,9 +27,10 @@ function LocaleLayout() {
 	return (
 		<>
 			<SiteHeader locale={locale} overlay={isHome} />
-			<main className={isHome ? undefined : 'mx-auto max-w-3xl px-6 pt-6 pb-16 print:max-w-none print:p-0'}>
+			<main className={isHome ? 'grow' : 'mx-auto w-full max-w-3xl grow px-6 pt-6 pb-16 print:max-w-none print:p-0'}>
 				<Outlet />
 			</main>
+			<SiteFooter locale={locale} />
 		</>
 	)
 }

@@ -29,6 +29,13 @@ type Messages = {
 	notFoundTitle: string
 	notFoundBody: string
 	goHome: string
+	/** Names the footer's list of contact and social links. */
+	elsewhere: string
+	email: string
+	/** Appended to the accessible name of links that open a new tab. */
+	opensInNewTab: string
+	openSource: string
+	viewSource: string
 }
 
 // Plain objects until an i18n library is chosen; keys mirror what the UI needs today.
@@ -60,6 +67,11 @@ export const messages: Record<Locale, Messages> = {
 		notFoundTitle: 'Page not found',
 		notFoundBody: 'The page you are looking for does not exist.',
 		goHome: 'Go to the home page',
+		elsewhere: 'Find me elsewhere',
+		email: 'Email',
+		opensInNewTab: 'opens in a new tab',
+		openSource: 'This site is open source.',
+		viewSource: 'View the code on GitHub',
 	},
 	es: {
 		localeName: 'Español',
@@ -88,5 +100,10 @@ export const messages: Record<Locale, Messages> = {
 		notFoundTitle: 'Página no encontrada',
 		notFoundBody: 'La página que buscas no existe.',
 		goHome: 'Ir a la página de inicio',
+		elsewhere: 'Encuéntrame en otros sitios',
+		email: 'Correo electrónico',
+		opensInNewTab: 'se abre en una pestaña nueva',
+		openSource: 'Este sitio es de código abierto.',
+		viewSource: 'Ver el código en GitHub',
 	},
 }
