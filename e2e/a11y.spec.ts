@@ -4,9 +4,10 @@ import { expect, test } from '@playwright/test'
 const paths = [
 	'/',
 	'/posts',
-	'/posts/hello-world',
+	'/posts/veganism-is-justice',
 	'/es',
-	'/es/posts/hello-world',
+	'/es/posts/veganism-is-justice',
+	'/es/posts/en-el-otro-lado-del-charco',
 	'/resume',
 	'/es/resume',
 	'/posts/does-not-exist',

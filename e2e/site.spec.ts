@@ -2,19 +2,15 @@ import { readFile } from 'node:fs/promises'
 
 import { expect, test } from '@playwright/test'
 
-test('home links to the posts list and on to an interactive post', async ({ page }) => {
+test('home links to the posts list and on to a post', async ({ page }) => {
 	await page.goto('/')
 	await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
 
 	await page.getByRole('link', { name: 'Posts', exact: true }).click()
 	await expect(page).toHaveURL('/posts')
 
-	await page.getByRole('link', { name: 'Hello, world' }).click()
-	await expect(page.getByRole('heading', { level: 1, name: 'Hello, world' })).toBeVisible()
-	await expect(page.getByRole('note')).toHaveText('This note is a React component rendered from MDX.')
-
-	await page.getByRole('button', { name: 'Increment' }).click()
-	await expect(page.getByText('Count: 1')).toBeVisible()
+	await page.getByRole('link', { name: 'Veganism is a matter of justice' }).click()
+	await expect(page.getByRole('heading', { level: 1, name: 'Veganism is a matter of justice' })).toBeVisible()
 })
 
 test('the header links to the resume in each language', async ({ page }) => {
@@ -49,7 +45,7 @@ test('the header marks the current section in bold', async ({ page }) => {
 	const postsLink = page.getByRole('banner').getByRole('link', { name: 'Posts', exact: true })
 	await expect(postsLink).not.toHaveClass(/font-semibold/)
 
-	await page.goto('/posts/hello-world')
+	await page.goto('/posts/veganism-is-justice')
 	await expect(postsLink).toHaveClass(/font-semibold/)
 	// Only the other sections underline on hover.
 	await expect(postsLink).not.toHaveClass(/hover:underline/)
@@ -79,21 +75,21 @@ test.describe('on a small screen', () => {
 })
 
 test('Spanish URLs serve Spanish content', async ({ page }) => {
-	await page.goto('/es/posts/hello-world')
+	await page.goto('/es/posts/veganism-is-justice')
 	await expect(page.locator('html')).toHaveAttribute('lang', 'es')
-	await expect(page.getByRole('heading', { level: 1, name: 'Hola, mundo' })).toBeVisible()
+	await expect(page.getByRole('heading', { level: 1, name: 'El veganismo es una cuestión de justicia' })).toBeVisible()
 })
 
 test('the language dropdown switches the current page to another locale', async ({ page }) => {
-	await page.goto('/posts/hello-world')
+	await page.goto('/posts/veganism-is-justice')
 	await page.getByRole('button', { name: /Language/ }).click()
 	await page.getByRole('option', { name: 'Español' }).click()
-	await expect(page).toHaveURL('/es/posts/hello-world')
-	await expect(page.getByRole('heading', { level: 1, name: 'Hola, mundo' })).toBeVisible()
+	await expect(page).toHaveURL('/es/posts/veganism-is-justice')
+	await expect(page.getByRole('heading', { level: 1, name: 'El veganismo es una cuestión de justicia' })).toBeVisible()
 
 	await page.getByRole('button', { name: /Idioma/ }).click()
 	await page.getByRole('option', { name: 'English' }).click()
-	await expect(page).toHaveURL('/posts/hello-world')
+	await expect(page).toHaveURL('/posts/veganism-is-justice')
 })
 
 test('pages declare their translations to search engines', async ({ page }) => {
@@ -107,23 +103,13 @@ test('pages declare their translations to search engines', async ({ page }) => {
 	}
 
 	expect(await hreflangs('/')).toEqual(['en /', 'es /es', 'x-default /'])
-	expect(await hreflangs('/es/posts/hello-world')).toEqual([
-		'en /posts/hello-world',
-		'es /es/posts/hello-world',
-		'x-default /posts/hello-world',
+	expect(await hreflangs('/es/posts/veganism-is-justice')).toEqual([
+		'en /posts/veganism-is-justice',
+		'es /es/posts/veganism-is-justice',
+		'x-default /posts/veganism-is-justice',
 	])
-	// English-only posts have no alternates, and their Spanish fallback defers to the English URL.
-	expect(await hreflangs('/posts/quiet-tools')).toEqual([])
-	await page.goto('/es/posts/only-in-english')
-	const canonical = await page.locator('link[rel="canonical"]').getAttribute('href')
-	expect(new URL(canonical ?? '').pathname).toBe('/posts/only-in-english')
-})
-
-test('a missing translation falls back to English with a notice', async ({ page }) => {
-	await page.goto('/es/posts/only-in-english')
-	await expect(page.getByRole('heading', { level: 1, name: 'Only in English' })).toBeVisible()
-	await expect(page.getByText('aún no está disponible en español')).toBeVisible()
-	await expect(page.locator('article')).toHaveAttribute('lang', 'en')
+	// Single-language posts have no alternates.
+	expect(await hreflangs('/es/posts/en-el-otro-lado-del-charco')).toEqual([])
 })
 
 test('unknown posts and locales respond with 404', async ({ page }) => {
@@ -131,6 +117,10 @@ test('unknown posts and locales respond with 404', async ({ page }) => {
 	expect(missingPost?.status()).toBe(404)
 	await expect(page.getByRole('heading', { name: 'Page not found' })).toBeVisible()
 	await expect(page.getByRole('banner').getByRole('link', { name: 'Posts', exact: true })).toBeVisible()
+
+	// Spanish-only posts have no English fallback.
+	const spanishOnly = await page.goto('/posts/en-el-otro-lado-del-charco')
+	expect(spanishOnly?.status()).toBe(404)
 
 	const unknownLocale = await page.goto('/xx')
 	expect(unknownLocale?.status()).toBe(404)
@@ -164,15 +154,15 @@ test.describe('without JavaScript', () => {
 	test.use({ javaScriptEnabled: false })
 
 	test('post bodies are part of the served HTML', async ({ page }) => {
-		await page.goto('/posts/hello-world')
-		await expect(page.getByText('This note is a React component rendered from MDX.')).toBeVisible()
+		await page.goto('/posts/veganism-is-justice')
+		await expect(page.getByText('There was a time when I could sit calmly with family and friends')).toBeVisible()
 	})
 })
 
 test('default-locale prefixed URLs redirect to unprefixed ones', async ({ page }) => {
-	await page.goto('/en/posts/hello-world')
-	await expect(page).toHaveURL('/posts/hello-world')
-	await expect(page.getByRole('heading', { level: 1, name: 'Hello, world' })).toBeVisible()
+	await page.goto('/en/posts/veganism-is-justice')
+	await expect(page).toHaveURL('/posts/veganism-is-justice')
+	await expect(page.getByRole('heading', { level: 1, name: 'Veganism is a matter of justice' })).toBeVisible()
 
 	const response = await page.request.get('/en', { maxRedirects: 0 })
 	expect(response.status()).toBe(301)
@@ -230,6 +220,6 @@ test('a translated post links to its other languages', async ({ page }) => {
 })
 
 test('an untranslated post does not list languages', async ({ page }) => {
-	await page.goto('/posts/quiet-tools')
-	await expect(page.getByRole('article')).not.toContainText('Available in:')
+	await page.goto('/es/posts/en-el-otro-lado-del-charco')
+	await expect(page.getByRole('article')).not.toContainText('Disponible en:')
 })

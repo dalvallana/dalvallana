@@ -12,7 +12,7 @@ import { type Locale, localeParam } from '@/lib/i18n'
 import { messages } from '@/lib/messages'
 import { postsQueryOptions } from '@/queries/posts'
 
-const recentPostCount = 10
+const recentPostCount = 3
 
 export const Route = createFileRoute('/{-$locale}/')({
 	loader: async ({ context: { queryClient, locale } }) => {
