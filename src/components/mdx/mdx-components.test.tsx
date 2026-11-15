@@ -10,4 +10,7 @@ test('MDX content renders the shared components', async () => {
 	await expect.element(screen.getByRole('note')).toHaveTextContent('Callout text')
 	await screen.getByRole('button', { name: 'Increment' }).click()
 	await expect.element(screen.getByText('Count: 1')).toBeVisible()
+	await expect
+		.element(screen.getByTitle('Fixture video'))
+		.toHaveAttribute('src', 'https://www.youtube-nocookie.com/embed/fixture-id')
 })
