@@ -13,4 +13,10 @@ test('MDX content renders the shared components', async () => {
 	await expect
 		.element(screen.getByTitle('Fixture video'))
 		.toHaveAttribute('src', 'https://www.youtube-nocookie.com/embed/fixture-id')
+	await expect
+		.element(screen.getByRole('img', { name: 'Fixture photo' }))
+		.toHaveAttribute(
+			'srcset',
+			'/src/assets/photos/netherlands-campus-768.webp 768w, /src/assets/photos/netherlands-campus-1536.webp 1536w',
+		)
 })
