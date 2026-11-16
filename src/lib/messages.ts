@@ -37,8 +37,8 @@ type Messages = {
 	email: string
 	/** Appended to the accessible name of links that open a new tab. */
 	opensInNewTab: string
-	openSource: string
-	viewSource: string
+	/** The footer line; `link` is the part that links to the repository. */
+	openSource: { before: string; link: string; after: string }
 }
 
 // Plain objects until an i18n library is chosen; keys mirror what the UI needs today.
@@ -75,8 +75,7 @@ export const messages: Record<Locale, Messages> = {
 		elsewhere: 'Find me elsewhere',
 		email: 'Email',
 		opensInNewTab: 'opens in a new tab',
-		openSource: 'This site is open source.',
-		viewSource: 'View the code on GitHub',
+		openSource: { before: 'This site is ', link: 'open source', after: '.' },
 	},
 	es: {
 		localeName: 'Español',
@@ -110,7 +109,6 @@ export const messages: Record<Locale, Messages> = {
 		elsewhere: 'Encuéntrame en otros sitios',
 		email: 'Correo electrónico',
 		opensInNewTab: 'se abre en una pestaña nueva',
-		openSource: 'Este sitio es de código abierto.',
-		viewSource: 'Ver el código en GitHub',
+		openSource: { before: 'Este sitio es de ', link: 'código abierto', after: '.' },
 	},
 }

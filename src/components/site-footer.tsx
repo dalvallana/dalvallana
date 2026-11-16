@@ -46,7 +46,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
 					</li>
 				))}
 			</ul>
-			{/* Stacked until md, where the whole line fits in both languages (the Spanish one is about 650px wide). */}
+			{/* Stacked until md, where the whole line fits in both languages. */}
 			<div className="flex flex-col items-center gap-1 text-sm text-muted-foreground md:flex-row md:justify-center md:gap-3">
 				<p>
 					{/* Prerendered pages bake in the build year, which may differ from the visitor's clock. */}
@@ -55,20 +55,20 @@ export function SiteFooter({ locale }: { locale: Locale }) {
 				<span aria-hidden className="hidden md:inline">
 					·
 				</span>
-				<p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
-					<span className="flex items-center gap-2 whitespace-nowrap">
-						<GitHubIcon className="size-4" />
-						{t.openSource}
+				<p className="flex items-center gap-2 whitespace-nowrap">
+					<GitHubIcon className="size-4" />
+					<span>
+						{t.openSource.before}
+						<TextAnchor
+							href={repoUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							aria-label={`${t.openSource.link} (${t.opensInNewTab})`}
+						>
+							{t.openSource.link}
+						</TextAnchor>
+						{t.openSource.after}
 					</span>
-					<TextAnchor
-						href={repoUrl}
-						target="_blank"
-						rel="noopener noreferrer"
-						aria-label={`${t.viewSource} (${t.opensInNewTab})`}
-						className="whitespace-nowrap"
-					>
-						{t.viewSource}
-					</TextAnchor>
 				</p>
 			</div>
 		</footer>

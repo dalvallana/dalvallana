@@ -172,7 +172,7 @@ test('default-locale prefixed URLs redirect to unprefixed ones', async ({ page }
 test('the footer links to the source code and social profiles in each language', async ({ page }) => {
 	await page.goto('/')
 	const footer = page.getByRole('contentinfo')
-	const repoLink = footer.getByRole('link', { name: 'View the code on GitHub (opens in a new tab)' })
+	const repoLink = footer.getByRole('link', { name: 'open source (opens in a new tab)' })
 	await expect(repoLink).toHaveAttribute('href', 'https://github.com/dalvallana/dalvallana')
 	await expect(repoLink).toHaveAttribute('target', '_blank')
 	const socials = footer.getByRole('list', { name: 'Find me elsewhere' })
@@ -195,7 +195,9 @@ test('the footer links to the source code and social profiles in each language',
 	await expect(footer).toContainText(`© ${new Date().getFullYear()} Diego Alvarado Orellana`)
 
 	await page.goto('/es')
-	await expect(page.getByRole('contentinfo').getByRole('link', { name: 'Ver el código en GitHub' })).toBeVisible()
+	await expect(
+		page.getByRole('contentinfo').getByRole('link', { name: 'código abierto (se abre en una pestaña nueva)' }),
+	).toBeVisible()
 })
 
 test('the footer sits at the bottom of the viewport on short pages', async ({ page }) => {
