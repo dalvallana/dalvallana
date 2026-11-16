@@ -54,7 +54,7 @@ export const messages: Record<Locale, Messages> = {
 		portraitAlt: 'Diego smiling in a selfie on a tiled rooftop, with a tabby cat walking toward the camera',
 		intro: [
 			'Hello! I’m a software engineer at Apple, living in Madrid. When I’m not building apps, I put my time into helping animals through activism and volunteering.',
-			'I also like playing tennis, building with Lego and tinkering with home automation. Lately I’ve been learning about gardening, nutrition, carpentry and construction.',
+			'I also like traveling, playing tennis, building with Lego and tinkering with home automation. Lately I’ve been learning about gardening, nutrition, carpentry and construction.',
 		],
 		recentPosts: 'Recent writing',
 		posts: 'Posts',
@@ -88,7 +88,7 @@ export const messages: Record<Locale, Messages> = {
 		portraitAlt: 'Diego sonriendo en un selfi sobre un tejado, con un gato atigrado caminando hacia la cámara',
 		intro: [
 			'¡Hola! Soy ingeniero de software en Apple y vivo en Madrid. Cuando no estoy creando aplicaciones, dedico mi tiempo a ayudar a los animales, ya sea a través del activismo o el voluntariado.',
-			'También me gusta jugar tenis, construir con Lego y trastear con aparatos de domótica. Últimamente estoy aprendiendo sobre jardinería, nutrición, carpintería y construcción.',
+			'También me gusta viajar, jugar tenis, construir con Lego y trastear con aparatos de domótica. Últimamente estoy aprendiendo sobre jardinería, nutrición, carpintería y construcción.',
 		],
 		recentPosts: 'Artículos recientes',
 		posts: 'Artículos',
